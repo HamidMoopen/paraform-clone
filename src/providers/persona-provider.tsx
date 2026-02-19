@@ -33,6 +33,7 @@ interface PersonaContextType {
   persona: Persona;
   setPersona: (persona: Persona) => void;
   setActiveCompany: (companyId: string) => void;
+  clearActiveCompany: () => void;
   clearPersona: () => void;
   isLoading: boolean;
 }
@@ -76,6 +77,16 @@ export function PersonaProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const clearActiveCompany = () => {
+    if (persona?.type === "hiring-manager") {
+      const updated: HiringManagerPersona = {
+        ...persona,
+        activeCompanyId: null,
+      };
+      setPersona(updated);
+    }
+  };
+
   const clearPersona = () => {
     setPersonaState(null);
     localStorage.removeItem(STORAGE_KEY);
@@ -83,7 +94,14 @@ export function PersonaProvider({ children }: { children: ReactNode }) {
 
   return (
     <PersonaContext.Provider
-      value={{ persona, setPersona, setActiveCompany, clearPersona, isLoading }}
+      value={{
+        persona,
+        setPersona,
+        setActiveCompany,
+        clearActiveCompany,
+        clearPersona,
+        isLoading,
+      }}
     >
       {children}
     </PersonaContext.Provider>

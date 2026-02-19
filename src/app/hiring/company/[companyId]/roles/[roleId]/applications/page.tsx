@@ -8,6 +8,9 @@ import { usePersona } from "@/providers/persona-provider";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ApplicationReviewCard } from "@/components/applications/application-review-card";
+import { EmptyState } from "@/components/shared/empty-state";
+import { ErrorState } from "@/components/shared/error-state";
+import { ApplicationCardSkeleton } from "@/components/shared/page-skeleton";
 import { APPLICATION_STATUS_LABELS } from "@/lib/constants";
 
 interface Application {
@@ -36,12 +39,17 @@ export default function HiringRoleApplicationsPage() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [roleTitle, setRoleTitle] = useState("");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchApplications = useCallback(() => {
     if (!roleId) return;
     setLoading(true);
+    setError(null);
     fetch(`/api/applications?roleId=${roleId}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch");
+        return res.json();
+      })
       .then((data) => {
         const list = data.applications ?? [];
         setApplications(list);
@@ -51,13 +59,22 @@ export default function HiringRoleApplicationsPage() {
             .then((r) => r.json())
             .then((r) => setRoleTitle(r.title ?? "Role"));
       })
-      .catch(() => setApplications([]))
+      .catch(() => {
+        setError("Failed to load applications.");
+        setApplications([]);
+      })
       .finally(() => setLoading(false));
   }, [roleId]);
 
   useEffect(() => {
     fetchApplications();
   }, [fetchApplications]);
+
+  useEffect(() => {
+    document.title = roleTitle
+      ? `Applications \u2014 ${roleTitle} | Job Board`
+      : "Applications | Job Board";
+  }, [roleTitle]);
 
   const handleStatusChange = async (applicationId: string, newStatus: string) => {
     const prev = applications.find((a) => a.id === applicationId);
@@ -120,20 +137,14 @@ export default function HiringRoleApplicationsPage() {
         Review and update application status.
       </p>
 
-      {loading ? (
-        <div className="mt-6 space-y-3">
+      {error ? (
+        <div className="mt-6">
+          <ErrorState message={error} onRetry={fetchApplications} />
+        </div>
+      ) : loading ? (
+        <div className="mt-6 space-y-4">
           {[1, 2, 3].map((i) => (
-            <Card key={i} className="animate-pulse">
-              <CardContent className="p-4">
-                <div className="h-12 flex gap-3">
-                  <div className="h-12 w-12 rounded-lg bg-muted" />
-                  <div className="flex-1 space-y-2">
-                    <div className="h-4 w-32 bg-muted rounded" />
-                    <div className="h-3 w-48 bg-muted rounded" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <ApplicationCardSkeleton key={i} />
           ))}
         </div>
       ) : (
@@ -167,13 +178,12 @@ export default function HiringRoleApplicationsPage() {
             <TabsContent key={tab} value={tab} className="mt-4">
               <div className="space-y-4">
                 {byStatus[tab].length === 0 ? (
-                  <Card>
-                    <CardContent className="p-8 text-center text-muted-foreground">
-                      {tab === "all"
-                        ? "No applications yet."
-                        : `No ${APPLICATION_STATUS_LABELS[tab] ?? tab} applications.`}
-                    </CardContent>
-                  </Card>
+                  <EmptyState
+                    title={tab === "all"
+                      ? "No applications received yet"
+                      : `No ${APPLICATION_STATUS_LABELS[tab]?.toLowerCase() ?? tab} applications`}
+                    description={tab === "all" ? "Share your role to get candidates!" : undefined}
+                  />
                 ) : (
                   byStatus[tab].map((app) => (
                     <ApplicationReviewCard

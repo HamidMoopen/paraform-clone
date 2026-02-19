@@ -29,11 +29,12 @@ export default function HiringLayout({
     persona?.type === "hiring-manager" ? persona.activeCompanyId : null;
 
   useEffect(() => {
-    if (!activeCompanyId) {
+    if (!activeCompanyId || persona?.type !== "hiring-manager") {
       setCompanyName(null);
       return;
     }
-    fetch(`/api/companies?hiringManagerId=${persona!.id}`)
+    const hmId = persona.id;
+    fetch(`/api/companies?hiringManagerId=${hmId}`)
       .then((res) => res.json())
       .then((data) => {
         const company = (data.companies ?? []).find(
@@ -42,7 +43,7 @@ export default function HiringLayout({
         setCompanyName(company?.name ?? null);
       })
       .catch(() => setCompanyName(null));
-  }, [activeCompanyId, persona?.id, persona]);
+  }, [activeCompanyId, persona?.id, persona?.type]);
 
   if (isLoading) {
     return (
@@ -79,6 +80,11 @@ export default function HiringLayout({
             <Link
               href="/hiring"
               className="font-semibold text-lg hover:opacity-80"
+              onClick={() => {
+                if (activeCompanyId) {
+                  clearActiveCompany();
+                }
+              }}
             >
               Job Board
             </Link>

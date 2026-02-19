@@ -6,7 +6,6 @@ import { useSearchParams } from "next/navigation";
 import { usePersona } from "@/providers/persona-provider";
 import { MessageThread } from "@/components/messages/message-thread";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
@@ -15,12 +14,9 @@ import { getInitials } from "@/lib/utils";
 import { formatRelativeTime } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { MessageSquare } from "lucide-react";
-import { APPLICATION_STATUS_LABELS, APPLICATION_STATUS_COLORS } from "@/lib/constants";
 
 interface ThreadItem {
   applicationId: string;
-  roleId?: string;
-  companyId?: string;
   roleTitle: string;
   companyName: string;
   otherParty: { name: string; avatarUrl: string | null };
@@ -32,7 +28,7 @@ interface ThreadItem {
   messageCount: number;
 }
 
-export default function HiringMessagesPage() {
+export default function CandidateMessagesPage() {
   useEffect(() => { document.title = "Messages | Job Board"; }, []);
   const searchParams = useSearchParams();
   const { persona } = usePersona();
@@ -42,10 +38,10 @@ export default function HiringMessagesPage() {
   const [error, setError] = useState(false);
 
   const fetchThreads = useCallback(() => {
-    if (persona?.type !== "hiring-manager") return;
+    if (persona?.type !== "candidate") return;
     setLoading(true);
     setError(false);
-    fetch(`/api/messages?hiringManagerId=${persona.id}`)
+    fetch(`/api/messages?candidateId=${persona.id}`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch");
         return res.json();
@@ -59,7 +55,7 @@ export default function HiringMessagesPage() {
     fetchThreads();
   }, [fetchThreads]);
 
-  if (persona?.type !== "hiring-manager") return null;
+  if (persona?.type !== "candidate") return null;
 
   const selectedThread = threadParam
     ? threads.find((t) => t.applicationId === threadParam)
@@ -69,7 +65,8 @@ export default function HiringMessagesPage() {
     <div className="flex flex-col h-[calc(100vh-8rem)] min-h-[400px]">
       <h1 className="text-2xl font-bold tracking-tight mb-2">Messages</h1>
       <p className="text-muted-foreground text-sm mb-4">
-        Conversations with accepted candidates.
+        Conversations with hiring managers for your applications in interview or
+        accepted stage.
       </p>
 
       <div className="flex flex-1 min-h-0 border rounded-xl bg-card overflow-hidden">
@@ -90,7 +87,7 @@ export default function HiringMessagesPage() {
               <EmptyState
                 icon={MessageSquare}
                 title="No messages yet"
-                description="Accept an application to start a conversation."
+                description="When an application moves to interview or accepted, you can message the hiring manager here."
               />
             </div>
           ) : (
@@ -100,7 +97,7 @@ export default function HiringMessagesPage() {
                 return (
                   <Link
                     key={thread.applicationId}
-                    href={`/hiring/messages?thread=${thread.applicationId}`}
+                    href={`/candidate/messages?thread=${thread.applicationId}`}
                   >
                     <div
                       className={cn(
@@ -167,7 +164,7 @@ export default function HiringMessagesPage() {
             <>
               <div className="border-b p-3 flex flex-wrap items-center gap-2">
                 <Link
-                  href="/hiring/messages"
+                  href="/candidate/messages"
                   className="sm:hidden text-sm text-muted-foreground hover:text-foreground mr-2"
                 >
                   ← Back
@@ -178,27 +175,11 @@ export default function HiringMessagesPage() {
                     {selectedThread.roleTitle} · {selectedThread.companyName}
                   </p>
                 </div>
-                <Badge
-                  className={cn(
-                    "text-xs",
-                    APPLICATION_STATUS_COLORS.accepted ?? "bg-muted"
-                  )}
-                >
-                  {APPLICATION_STATUS_LABELS.accepted}
-                </Badge>
-                {selectedThread.companyId && selectedThread.roleId && (
-                  <Link
-                    href={`/hiring/company/${selectedThread.companyId}/roles/${selectedThread.roleId}/applications`}
-                    className="text-xs text-primary hover:underline ml-auto"
-                  >
-                    View application
-                  </Link>
-                )}
               </div>
               <div className="flex-1 min-h-0">
                 <MessageThread
                   applicationId={selectedThread.applicationId}
-                  currentUserType="hiring-manager"
+                  currentUserType="candidate"
                   currentUserId={persona.id}
                 />
               </div>

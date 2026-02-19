@@ -8,6 +8,7 @@ import { usePersona } from "@/providers/persona-provider";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ErrorState } from "@/components/shared/error-state";
 import {
   Dialog,
   DialogContent,
@@ -69,6 +70,7 @@ export default function HiringRoleDetailPage() {
   const roleId = params.roleId as string;
   const [role, setRole] = useState<RoleDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [confirmAction, setConfirmAction] = useState<
     { status: "published" | "closed" } | null
   >(null);
@@ -77,19 +79,26 @@ export default function HiringRoleDetailPage() {
   const fetchRole = useCallback(() => {
     if (!roleId) return;
     setLoading(true);
+    setError(false);
     fetch(`/api/roles/${roleId}?forHm=true`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch");
         return res.json();
       })
       .then(setRole)
-      .catch(() => setRole(null))
+      .catch(() => setError(true))
       .finally(() => setLoading(false));
   }, [roleId]);
 
   useEffect(() => {
     fetchRole();
   }, [fetchRole]);
+
+  useEffect(() => {
+    if (role) {
+      document.title = `${role.title} \u2014 Manage | Job Board`;
+    }
+  }, [role]);
 
   const handleStatusChange = async (newStatus: "draft" | "published" | "closed") => {
     setUpdating(true);
@@ -120,7 +129,7 @@ export default function HiringRoleDetailPage() {
 
   if (persona?.type !== "hiring-manager") return null;
 
-  if (loading || !role) {
+  if (loading) {
     return (
       <div className="space-y-4">
         <div className="h-8 w-64 bg-muted animate-pulse rounded" />
@@ -128,6 +137,10 @@ export default function HiringRoleDetailPage() {
         <div className="h-32 bg-muted animate-pulse rounded" />
       </div>
     );
+  }
+
+  if (error || !role) {
+    return <ErrorState message="Failed to load role." onRetry={fetchRole} />;
   }
 
   const createdAt =

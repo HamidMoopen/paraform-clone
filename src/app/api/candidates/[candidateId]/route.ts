@@ -4,6 +4,7 @@ import { updateCandidateProfileSchema } from "@/lib/validators";
 
 export const dynamic = "force-dynamic";
 
+/** GET /api/candidates/:candidateId — Return a candidate's full profile. */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ candidateId: string }> }
@@ -24,6 +25,7 @@ export async function GET(
   return NextResponse.json(candidate);
 }
 
+/** PATCH /api/candidates/:candidateId — Update a candidate's profile fields. */
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ candidateId: string }> }

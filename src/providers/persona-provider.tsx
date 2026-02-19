@@ -5,6 +5,8 @@ import {
   useContext,
   useState,
   useEffect,
+  useRef,
+  useCallback,
   type ReactNode,
 } from "react";
 
@@ -45,6 +47,8 @@ const STORAGE_KEY = "jobboard-persona";
 export function PersonaProvider({ children }: { children: ReactNode }) {
   const [persona, setPersonaState] = useState<Persona>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const personaRef = useRef<Persona>(null);
+  personaRef.current = persona;
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -58,39 +62,43 @@ export function PersonaProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  const setPersona = (p: Persona) => {
+  const setPersona = useCallback((p: Persona) => {
     setPersonaState(p);
     if (p) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
     } else {
       localStorage.removeItem(STORAGE_KEY);
     }
-  };
+  }, []);
 
-  const setActiveCompany = (companyId: string) => {
-    if (persona?.type === "hiring-manager") {
+  const setActiveCompany = useCallback((companyId: string) => {
+    const p = personaRef.current;
+    if (p?.type === "hiring-manager") {
       const updated: HiringManagerPersona = {
-        ...persona,
+        ...p,
         activeCompanyId: companyId,
       };
-      setPersona(updated);
+      setPersonaState(updated);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     }
-  };
+  }, []);
 
-  const clearActiveCompany = () => {
-    if (persona?.type === "hiring-manager") {
+  const clearActiveCompany = useCallback(() => {
+    const p = personaRef.current;
+    if (p?.type === "hiring-manager") {
       const updated: HiringManagerPersona = {
-        ...persona,
+        ...p,
         activeCompanyId: null,
       };
-      setPersona(updated);
+      setPersonaState(updated);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     }
-  };
+  }, []);
 
-  const clearPersona = () => {
+  const clearPersona = useCallback(() => {
     setPersonaState(null);
     localStorage.removeItem(STORAGE_KEY);
-  };
+  }, []);
 
   return (
     <PersonaContext.Provider

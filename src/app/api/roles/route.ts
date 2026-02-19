@@ -5,6 +5,7 @@ import type { Prisma } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
+/** GET /api/roles — List published roles with optional filters (company, location, salary, search). */
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const companyId = searchParams.get("companyId") ?? undefined;
@@ -86,6 +87,7 @@ export async function GET(request: NextRequest) {
   });
 }
 
+/** POST /api/roles — Create a new role (defaults to draft status). */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();

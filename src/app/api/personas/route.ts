@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
+/** GET /api/personas — Return all persona hiring managers and candidates for the landing page. */
 export async function GET() {
   const [hiringManagers, candidates] = await Promise.all([
     prisma.hiringManager.findMany({

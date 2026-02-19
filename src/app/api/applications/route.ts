@@ -4,6 +4,7 @@ import { createApplicationSchema } from "@/lib/validators";
 
 export const dynamic = "force-dynamic";
 
+/** GET /api/applications — List applications filtered by candidateId or roleId. */
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const candidateId = searchParams.get("candidateId");
@@ -79,6 +80,7 @@ export async function GET(request: NextRequest) {
   });
 }
 
+/** POST /api/applications — Create a new application for a candidate on a published role. */
 export async function POST(request: NextRequest) {
   let body: unknown;
   try {

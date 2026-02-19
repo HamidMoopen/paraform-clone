@@ -8,6 +8,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { EmptyState } from "@/components/shared/empty-state";
+import { ErrorState } from "@/components/shared/error-state";
+import { TableRowSkeleton } from "@/components/shared/page-skeleton";
 import {
   ROLE_STATUS_LABELS,
   ROLE_STATUS_COLORS,
@@ -53,12 +56,17 @@ export default function HiringCompanyRolesPage() {
   const [companyName, setCompanyName] = useState<string>("");
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchRoles = useCallback(() => {
     if (!companyId) return;
     setLoading(true);
+    setError(null);
     fetch(`/api/roles?companyId=${companyId}&includeAll=true`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch");
+        return res.json();
+      })
       .then((data) => {
         setRoles(data.roles ?? []);
         const first = (data.roles ?? [])[0];
@@ -71,13 +79,22 @@ export default function HiringCompanyRolesPage() {
               setCompanyName(c?.name ?? "Company");
             });
       })
-      .catch(() => setRoles([]))
+      .catch(() => {
+        setError("Failed to load roles.");
+        setRoles([]);
+      })
       .finally(() => setLoading(false));
   }, [companyId, persona?.id]);
 
   useEffect(() => {
     fetchRoles();
   }, [fetchRoles]);
+
+  useEffect(() => {
+    document.title = companyName
+      ? `Roles \u2014 ${companyName} | Job Board`
+      : "Roles | Job Board";
+  }, [companyName]);
 
   if (persona?.type !== "hiring-manager") return null;
 
@@ -112,16 +129,13 @@ export default function HiringCompanyRolesPage() {
         </Button>
       </div>
 
-      {loading ? (
-        <div className="mt-6 space-y-3">
-          {[1, 2, 3].map((i) => (
-            <Card key={i} className="animate-pulse">
-              <CardContent className="p-4">
-                <div className="h-5 w-48 bg-muted rounded" />
-                <div className="mt-2 h-4 w-full bg-muted rounded" />
-              </CardContent>
-            </Card>
-          ))}
+      {error ? (
+        <div className="mt-6">
+          <ErrorState message={error} onRetry={fetchRoles} />
+        </div>
+      ) : loading ? (
+        <div className="mt-6">
+          <TableRowSkeleton />
         </div>
       ) : (
         <Tabs defaultValue="all" className="mt-6">
@@ -139,22 +153,11 @@ export default function HiringCompanyRolesPage() {
             <TabsContent key={tab} value={tab} className="mt-4">
               <div className="space-y-3">
                 {filterByTab[tab].length === 0 ? (
-                  <Card>
-                    <CardContent className="p-8 text-center text-muted-foreground">
-                      {tab === "all"
-                        ? "No roles yet. Create your first role."
-                        : `No ${tab} roles.`}
-                      {tab === "all" && (
-                        <div className="mt-4">
-                          <Button asChild variant="outline">
-                            <Link href={`/hiring/company/${companyId}/roles/new`}>
-                              Create New Role
-                            </Link>
-                          </Button>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
+                  <EmptyState
+                    title={tab === "all" ? "No roles yet" : `No ${tab} roles`}
+                    description={tab === "all" ? "Create your first role to get started." : undefined}
+                    action={tab === "all" ? { label: "Create New Role", href: `/hiring/company/${companyId}/roles/new` } : undefined}
+                  />
                 ) : (
                   filterByTab[tab].map((role) => {
                     const createdAt =

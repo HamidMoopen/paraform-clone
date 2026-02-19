@@ -55,6 +55,7 @@ export default function CandidateLayout({
   const navLinks = [
     { href: "/candidate/roles", label: "Browse Roles" },
     { href: "/candidate/applications", label: "My Applications" },
+    { href: "/candidate/messages", label: "Messages" },
     { href: "/candidate/profile", label: "Profile" },
   ];
 
@@ -74,7 +75,10 @@ export default function CandidateLayout({
                 href === "/candidate/roles"
                   ? pathname === "/candidate/roles" ||
                     pathname.startsWith("/candidate/roles/")
-                  : pathname === href;
+                  : href === "/candidate/messages"
+                    ? pathname === "/candidate/messages" ||
+                      pathname.startsWith("/candidate/messages")
+                    : pathname === href;
               return (
                 <Link
                   key={href}

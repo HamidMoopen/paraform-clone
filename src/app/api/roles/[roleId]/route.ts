@@ -4,6 +4,7 @@ import { updateRoleStatusSchema } from "@/lib/validators";
 
 export const dynamic = "force-dynamic";
 
+/** GET /api/roles/:roleId — Return the detail for a single role, including its company. */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ roleId: string }> }
@@ -40,6 +41,7 @@ export async function GET(
   return NextResponse.json(role);
 }
 
+/** PATCH /api/roles/:roleId — Update a role's status (e.g. draft, published, closed). */
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ roleId: string }> }

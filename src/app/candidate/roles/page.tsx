@@ -160,10 +160,13 @@ export default function CandidateRolesPage() {
               >
                 {page > 1 ? (
                   <Link
-                    href={`/candidate/roles?${new URLSearchParams({
-                      ...Object.fromEntries(searchParams.entries()),
-                      page: String(page - 1),
-                    })}`}
+                    href={(() => {
+                      const p = new URLSearchParams(searchParams.toString());
+                      if (page - 1 <= 1) p.delete("page");
+                      else p.set("page", String(page - 1));
+                      const qs = p.toString();
+                      return qs ? `/candidate/roles?${qs}` : "/candidate/roles";
+                    })()}
                   >
                     Previous
                   </Link>

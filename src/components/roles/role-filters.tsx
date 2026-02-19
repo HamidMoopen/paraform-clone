@@ -49,8 +49,9 @@ export function RoleFilters({ companies }: RoleFiltersProps) {
       const params = new URLSearchParams(searchParamsRef.current.toString());
       if (locationInput.trim()) params.set("location", locationInput.trim());
       else params.delete("location");
-      params.set("page", "1");
-      router.push(`/candidate/roles?${params.toString()}`, { scroll: false });
+      params.delete("page");
+      const qs = params.toString();
+      router.replace(qs ? `/candidate/roles?${qs}` : "/candidate/roles", { scroll: false });
     }, DEBOUNCE_MS);
     return () => clearTimeout(t);
   }, [locationInput, router]);
@@ -60,8 +61,9 @@ export function RoleFilters({ companies }: RoleFiltersProps) {
       const params = new URLSearchParams(searchParams.toString());
       if (value) params.set(key, value);
       else params.delete(key);
-      params.set("page", "1");
-      router.push(`/candidate/roles?${params.toString()}`, { scroll: false });
+      params.delete("page");
+      const qs = params.toString();
+      router.replace(qs ? `/candidate/roles?${qs}` : "/candidate/roles", { scroll: false });
     },
     [router, searchParams]
   );
@@ -79,7 +81,7 @@ export function RoleFilters({ companies }: RoleFiltersProps) {
   const clearFilters = () => {
     setLocationInput("");
     setCompanySearch("");
-    router.push("/candidate/roles", { scroll: false });
+    router.replace("/candidate/roles", { scroll: false });
   };
 
   return (

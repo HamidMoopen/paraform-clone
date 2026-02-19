@@ -1,6 +1,6 @@
 # Jobaform
 
-A minimal job board application built as a take-home project.
+A job board platform connecting candidates with hiring managers.
 
 ## Features
 
@@ -9,14 +9,14 @@ A minimal job board application built as a take-home project.
 - View detailed job postings
 - Submit applications with a cover note
 - Track application status
-- Message hiring managers on accepted/interview applications
+- Message hiring managers on interview/accepted applications
 - Edit profile (skills, bio, LinkedIn, etc.)
 
 **For Hiring Managers:**
 - Create and manage companies
 - Post roles with draft/publish/close lifecycle
 - Review applications with status management (new → reviewing → interview → accepted/rejected)
-- Message accepted candidates
+- Message candidates in interview or accepted stage
 
 ## Tech Stack
 
@@ -39,25 +39,3 @@ A minimal job board application built as a take-home project.
 5. Seed demo data: `npx prisma db seed`
 6. Start the dev server: `npm run dev`
 7. Open http://localhost:3000
-
-## Demo Personas
-
-The app comes pre-loaded with demo personas:
-
-**Hiring Managers:**
-- Sarah Chen (VP of Engineering @ Acme AI, CloudSync)
-- Marcus Rivera (Head of Product @ CloudSync)
-- Priya Patel (Engineering Manager @ HealthStack)
-
-**Candidates:**
-- Alex Johnson (Full-Stack Engineer, 3yr exp)
-- Jordan Lee (New Grad, CS @ Stanford)
-- Sam Taylor (Senior SWE, 8yr exp)
-
-## Architecture Decisions
-
-- **No auth:** Persona selection replaces authentication for demo purposes
-- **PostgreSQL (Neon):** Managed Postgres with connection pooling — swap the connection string for any Postgres provider
-- **Soft deletes:** Closing a role preserves application data
-- **Polymorphic messaging:** Messages reference either HM or candidate as sender
-- **Client-side routing guards:** Persona context + localStorage ensures correct user type per section

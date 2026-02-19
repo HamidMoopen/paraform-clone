@@ -157,10 +157,9 @@ export default function Home() {
 
       <footer className="border-t py-6 mt-auto">
         <div className="container max-w-4xl mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>Built as a take-home project · 2025</p>
           <Link
             href="/"
-            className="underline hover:text-foreground mt-1 inline-block"
+            className="underline hover:text-foreground inline-block"
             onClick={(e) => {
               e.preventDefault();
               clearPersona();

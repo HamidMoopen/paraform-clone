@@ -192,55 +192,36 @@ export default function RoleDetailPage() {
         </p>
       </header>
 
-      <div className="grid md:grid-cols-[1fr,280px] gap-8">
-        <div className="space-y-6">
-          <section>
-            <h2 className="text-lg font-semibold mb-3">Description</h2>
-            <DescriptionRenderer text={role.description} />
-          </section>
-        </div>
-        <aside className="space-y-6">
-          <div className="rounded-xl border bg-card p-4 space-y-2 sticky top-24">
-            <h3 className="font-semibold">{role.company.name}</h3>
-            {role.company.description && (
-              <p className="text-sm text-muted-foreground line-clamp-3">
-                {role.company.description}
-              </p>
-            )}
+      {(role.company.description || role.company.industry || role.company.website) && (
+        <section className="space-y-1">
+          <h2 className="text-lg font-semibold">About {role.company.name}</h2>
+          {role.company.description && (
+            <p className="text-sm text-muted-foreground">
+              {role.company.description}
+            </p>
+          )}
+          <div className="flex items-center gap-3 text-sm">
             {role.company.industry && (
-              <p className="text-xs text-muted-foreground">
-                {role.company.industry}
-              </p>
+              <span className="text-muted-foreground">{role.company.industry}</span>
             )}
             {role.company.website && (
               <a
                 href={role.company.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-primary hover:underline block"
+                className="text-primary hover:underline"
               >
                 Visit website
               </a>
             )}
-            {candidate && !role.hasApplied && (
-              <Button
-                className="w-full mt-2"
-                onClick={() => setApplyOpen(true)}
-              >
-                Apply Now
-              </Button>
-            )}
-            {candidate && role.hasApplied && (
-              <Button asChild variant="outline" className="w-full mt-2">
-                <Link href="/candidate/applications">
-                  <CheckCircle2 className="h-4 w-4 mr-2" />
-                  Applied
-                </Link>
-              </Button>
-            )}
           </div>
-        </aside>
-      </div>
+        </section>
+      )}
+
+      <section className="space-y-3">
+        <h2 className="text-lg font-semibold">Description</h2>
+        <DescriptionRenderer text={role.description} />
+      </section>
 
       {candidate && !role.hasApplied && (
         <ApplyDialog

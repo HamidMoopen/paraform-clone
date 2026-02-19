@@ -44,16 +44,23 @@ export default function CandidateRolesPage() {
 
   const candidateId = persona?.type === "candidate" ? persona.id : undefined;
 
+  const [allCompanies, setAllCompanies] = useState<{ id: string; name: string }[]>([]);
+
   const companies = useMemo(() => {
     const seen = new Set<string>();
-    return roles
+    const list = roles
       .map((r) => r.company)
       .filter((c) => {
         if (seen.has(c.id)) return false;
         seen.add(c.id);
         return true;
       });
+    return list;
   }, [roles]);
+
+  useEffect(() => {
+    if (companies.length > 0) setAllCompanies(companies);
+  }, [companies]);
 
   const fetchRoles = useCallback(() => {
     if (!candidateId) return;
@@ -115,19 +122,19 @@ export default function CandidateRolesPage() {
         </p>
       </div>
 
-      <RoleFilters companies={companies} />
+      <RoleFilters companies={allCompanies.length > 0 ? allCompanies : companies} />
 
       {error && (
         <ErrorState message={error} onRetry={fetchRoles} />
       )}
 
-      {!error && loading ? (
+      {!error && loading && roles.length === 0 ? (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
             <RoleCardSkeleton key={i} />
           ))}
         </div>
-      ) : roles.length === 0 ? (
+      ) : roles.length === 0 && !loading ? (
         <EmptyState
           title={hasFilters ? "No roles match your filters" : "No open roles right now"}
           description={hasFilters ? undefined : "Check back soon!"}

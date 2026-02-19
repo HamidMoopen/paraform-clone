@@ -19,6 +19,7 @@ import { APPLICATION_STATUS_LABELS, APPLICATION_STATUS_COLORS } from "@/lib/cons
 
 interface ThreadItem {
   applicationId: string;
+  applicationStatus: string;
   roleId?: string;
   companyId?: string;
   roleTitle: string;
@@ -181,10 +182,10 @@ export default function HiringMessagesPage() {
                 <Badge
                   className={cn(
                     "text-xs",
-                    APPLICATION_STATUS_COLORS.accepted ?? "bg-muted"
+                    APPLICATION_STATUS_COLORS[selectedThread.applicationStatus] ?? "bg-muted"
                   )}
                 >
-                  {APPLICATION_STATUS_LABELS.accepted}
+                  {APPLICATION_STATUS_LABELS[selectedThread.applicationStatus] ?? selectedThread.applicationStatus}
                 </Badge>
                 {selectedThread.companyId && selectedThread.roleId && (
                   <Link

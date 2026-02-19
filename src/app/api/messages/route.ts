@@ -76,6 +76,7 @@ export async function GET(request: NextRequest) {
       const lastMsg = app.messages[0];
       return {
         applicationId: app.id,
+        applicationStatus: app.status,
         roleId: app.role.id,
         companyId: app.role.company.id,
         roleTitle: app.role.title,
@@ -129,6 +130,7 @@ export async function GET(request: NextRequest) {
       const lastMsg = app.messages[0];
       return {
         applicationId: app.id,
+        applicationStatus: app.status,
         roleTitle: app.role.title,
         companyName: app.role.company.name,
         otherParty: {

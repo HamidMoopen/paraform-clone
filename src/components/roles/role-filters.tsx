@@ -5,13 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 const DEBOUNCE_MS = 300;
 
@@ -28,12 +22,27 @@ export function RoleFilters({ companies }: RoleFiltersProps) {
   const salaryMaxParam = searchParams.get("salaryMax") ?? "";
 
   const [locationInput, setLocationInput] = useState(locationParam);
+  const [companySearch, setCompanySearch] = useState("");
+  const [companyOpen, setCompanyOpen] = useState(false);
+  const companyRef = useRef<HTMLDivElement>(null);
   const searchParamsRef = useRef(searchParams);
   searchParamsRef.current = searchParams;
+
+  const selectedCompany = companies.find((c) => c.id === companyId);
 
   useEffect(() => {
     setLocationInput(locationParam);
   }, [locationParam]);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (companyRef.current && !companyRef.current.contains(e.target as Node)) {
+        setCompanyOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   useEffect(() => {
     const t = setTimeout(() => {
@@ -57,6 +66,10 @@ export function RoleFilters({ companies }: RoleFiltersProps) {
     [router, searchParams]
   );
 
+  const filteredCompanies = companies.filter((c) =>
+    c.name.toLowerCase().includes(companySearch.toLowerCase())
+  );
+
   const hasFilters =
     companyId ||
     locationParam ||
@@ -65,30 +78,70 @@ export function RoleFilters({ companies }: RoleFiltersProps) {
 
   const clearFilters = () => {
     setLocationInput("");
+    setCompanySearch("");
     router.push("/candidate/roles", { scroll: false });
   };
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-end gap-4">
-        <div className="space-y-2 w-48">
+        <div className="space-y-2 w-48 relative" ref={companyRef}>
           <Label htmlFor="filter-company">Company</Label>
-          <Select
-            value={companyId || "all"}
-            onValueChange={(v) => updateParam("company", v === "all" ? "" : v)}
-          >
-            <SelectTrigger id="filter-company">
-              <SelectValue placeholder="All companies" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All companies</SelectItem>
-              {companies.map((c) => (
-                <SelectItem key={c.id} value={c.id}>
+          <Input
+            id="filter-company"
+            placeholder="Search companies..."
+            value={companyOpen ? companySearch : (selectedCompany?.name ?? companySearch)}
+            onChange={(e) => {
+              setCompanySearch(e.target.value);
+              if (!companyOpen) setCompanyOpen(true);
+              if (companyId) updateParam("company", "");
+            }}
+            onFocus={() => {
+              setCompanyOpen(true);
+              setCompanySearch("");
+            }}
+            autoComplete="off"
+          />
+          {companyOpen && (
+            <div className="absolute z-50 top-full mt-1 w-full rounded-md border bg-popover text-popover-foreground shadow-md max-h-48 overflow-y-auto">
+              <button
+                type="button"
+                className={cn(
+                  "w-full text-left px-3 py-1.5 text-sm hover:bg-accent transition-colors",
+                  !companyId && "text-foreground font-medium"
+                )}
+                onClick={() => {
+                  updateParam("company", "");
+                  setCompanySearch("");
+                  setCompanyOpen(false);
+                }}
+              >
+                All companies
+              </button>
+              {filteredCompanies.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  className={cn(
+                    "w-full text-left px-3 py-1.5 text-sm hover:bg-accent transition-colors",
+                    companyId === c.id && "text-foreground font-medium"
+                  )}
+                  onClick={() => {
+                    updateParam("company", c.id);
+                    setCompanySearch("");
+                    setCompanyOpen(false);
+                  }}
+                >
                   {c.name}
-                </SelectItem>
+                </button>
               ))}
-            </SelectContent>
-          </Select>
+              {filteredCompanies.length === 0 && (
+                <p className="px-3 py-2 text-sm text-muted-foreground">
+                  No companies found
+                </p>
+              )}
+            </div>
+          )}
         </div>
         <div className="space-y-2 w-48">
           <Label htmlFor="filter-location">Location</Label>

@@ -180,41 +180,69 @@ export function MessageThread({
             No messages yet. Send one to start the conversation.
           </p>
         ) : (
-          messages.map((msg) => {
+          messages.map((msg, idx) => {
             const isMe =
               msg.sender.type === currentUserType &&
               msg.sender.id === currentUserId;
+            const prev = idx > 0 ? messages[idx - 1] : null;
+            const sameSender =
+              prev !== null && prev.sender.id === msg.sender.id && prev.sender.type === msg.sender.type;
+            const withinHour =
+              sameSender &&
+              Math.abs(
+                new Date(msg.createdAt).getTime() -
+                  new Date(prev!.createdAt).getTime()
+              ) < 3_600_000;
+            const grouped = sameSender && withinHour;
+            const next = idx < messages.length - 1 ? messages[idx + 1] : null;
+            const nextGrouped =
+              next !== null &&
+              next.sender.id === msg.sender.id &&
+              next.sender.type === msg.sender.type &&
+              Math.abs(
+                new Date(next.createdAt).getTime() -
+                  new Date(msg.createdAt).getTime()
+              ) < 3_600_000;
+            const showTimestamp = !nextGrouped;
+
             return (
               <div
                 key={msg.id}
                 className={cn(
                   "flex gap-2",
-                  isMe ? "flex-row-reverse" : "flex-row"
+                  isMe ? "flex-row-reverse" : "flex-row",
+                  grouped && "mt-[-8px]"
                 )}
               >
-                <Avatar className="h-8 w-8 shrink-0">
-                  <AvatarFallback className="text-xs bg-muted">
-                    {msg.sender.avatarUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={msg.sender.avatarUrl}
-                        alt=""
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      getInitials(msg.sender.name || "?")
-                    )}
-                  </AvatarFallback>
-                </Avatar>
+                {grouped ? (
+                  <div className="w-8 shrink-0" />
+                ) : (
+                  <Avatar className="h-8 w-8 shrink-0">
+                    <AvatarFallback className="text-xs bg-muted">
+                      {msg.sender.avatarUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={msg.sender.avatarUrl}
+                          alt=""
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        getInitials(msg.sender.name || "?")
+                      )}
+                    </AvatarFallback>
+                  </Avatar>
+                )}
                 <div
                   className={cn(
                     "flex flex-col max-w-[85%]",
                     isMe ? "items-end" : "items-start"
                   )}
                 >
-                  <span className="text-xs text-muted-foreground mb-0.5">
-                    {msg.sender.name || (isMe ? "You" : "Other")}
-                  </span>
+                  {!grouped && (
+                    <span className="text-xs text-muted-foreground mb-0.5">
+                      {msg.sender.name || (isMe ? "You" : "Other")}
+                    </span>
+                  )}
                   <div
                     className={cn(
                       "rounded-lg px-3 py-2 text-sm whitespace-pre-wrap break-words",
@@ -225,9 +253,11 @@ export function MessageThread({
                   >
                     {msg.content}
                   </div>
-                  <span className="text-xs text-muted-foreground mt-0.5">
-                    {formatRelativeTime(new Date(msg.createdAt))}
-                  </span>
+                  {showTimestamp && (
+                    <span className="text-xs text-muted-foreground mt-0.5">
+                      {formatRelativeTime(new Date(msg.createdAt))}
+                    </span>
+                  )}
                   {failedId === msg.id && (
                     <Button
                       variant="link"

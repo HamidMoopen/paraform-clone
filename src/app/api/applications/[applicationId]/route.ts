@@ -4,6 +4,7 @@ import { updateApplicationStatusSchema } from "@/lib/validators";
 
 export const dynamic = "force-dynamic";
 
+/** PATCH /api/applications/:applicationId — Update an application's status (e.g. accepted, rejected). */
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ applicationId: string }> }

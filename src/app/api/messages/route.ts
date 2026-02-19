@@ -4,6 +4,7 @@ import { createMessageSchema } from "@/lib/validators";
 
 export const dynamic = "force-dynamic";
 
+/** GET /api/messages — Return messages for an application, or message threads for a hiring manager / candidate. */
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const applicationId = searchParams.get("applicationId");
@@ -111,7 +112,7 @@ export async function GET(request: NextRequest) {
     const applications = await prisma.application.findMany({
       where: {
         candidateId,
-        status: "accepted",
+        status: { in: ["interview", "accepted"] },
       },
       include: {
         role: {
@@ -168,6 +169,7 @@ export async function GET(request: NextRequest) {
   );
 }
 
+/** POST /api/messages — Send a message on an application thread (interview or accepted stage only). */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -193,9 +195,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (application.status !== "accepted") {
+    if (!["interview", "accepted"].includes(application.status)) {
       return NextResponse.json(
-        { error: "Messaging is only available for accepted applications" },
+        { error: "Messaging is only available for applications in interview or accepted stage." },
         { status: 400 }
       );
     }

@@ -19,7 +19,7 @@ async function main() {
       industry: "AI / Machine Learning",
       location: "San Francisco, CA",
       website: "https://acmeai.example.com",
-      logoUrl: "/logos/acme-ai.png",
+      logoUrl: null,
     },
   });
 
@@ -31,7 +31,7 @@ async function main() {
       industry: "Cloud Infrastructure",
       location: "New York, NY",
       website: "https://cloudsync.example.com",
-      logoUrl: "/logos/cloudsync.png",
+      logoUrl: null,
     },
   });
 
@@ -43,7 +43,7 @@ async function main() {
       industry: "Healthcare Technology",
       location: "Austin, TX",
       website: "https://healthstack.example.com",
-      logoUrl: "/logos/healthstack.png",
+      logoUrl: null,
     },
   });
 
@@ -52,7 +52,7 @@ async function main() {
       name: "Sarah Chen",
       email: "sarah@acmeai.example.com",
       title: "VP of Engineering",
-      avatarUrl: "/avatars/sarah.png",
+      avatarUrl: null,
       isPersona: true,
     },
   });
@@ -62,7 +62,7 @@ async function main() {
       name: "Marcus Rivera",
       email: "marcus@cloudsync.example.com",
       title: "Head of Product",
-      avatarUrl: "/avatars/marcus.png",
+      avatarUrl: null,
       isPersona: true,
     },
   });
@@ -72,7 +72,7 @@ async function main() {
       name: "Priya Patel",
       email: "priya@healthstack.example.com",
       title: "Engineering Manager",
-      avatarUrl: "/avatars/priya.png",
+      avatarUrl: null,
       isPersona: true,
     },
   });
@@ -91,7 +91,7 @@ async function main() {
       name: "Alex Johnson",
       email: "alex.johnson@email.com",
       linkedinUrl: "https://linkedin.com/in/alexjohnson",
-      avatarUrl: "/avatars/alex.png",
+      avatarUrl: null,
       headline: "Full-Stack Engineer · 3 Years Experience",
       yearsExperience: 3,
       skills: "React, TypeScript, Node.js, PostgreSQL, AWS",
@@ -105,7 +105,7 @@ async function main() {
       name: "Jordan Lee",
       email: "jordan.lee@email.com",
       linkedinUrl: "https://linkedin.com/in/jordanlee",
-      avatarUrl: "/avatars/jordan.png",
+      avatarUrl: null,
       headline: "New Grad · CS @ Stanford",
       yearsExperience: 0,
       skills: "Python, Java, React, Machine Learning, SQL",
@@ -119,7 +119,7 @@ async function main() {
       name: "Sam Taylor",
       email: "sam.taylor@email.com",
       linkedinUrl: "https://linkedin.com/in/samtaylor",
-      avatarUrl: "/avatars/sam.png",
+      avatarUrl: null,
       headline: "Senior Software Engineer · 8 Years Experience",
       yearsExperience: 8,
       skills: "Go, Kubernetes, Terraform, System Design, Python, TypeScript",

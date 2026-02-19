@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createCompanySchema } from "@/lib/validators";
 
 export default function NewCompanyPage() {
+  useEffect(() => { document.title = "Create Company | Job Board"; }, []);
   const router = useRouter();
   const { persona, setActiveCompany } = usePersona();
   const [form, setForm] = useState({

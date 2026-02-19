@@ -5,8 +5,10 @@ import Link from "next/link";
 import { usePersona } from "@/providers/persona-provider";
 import { ApplicationCard } from "@/components/applications/application-card";
 import { MessageDialog } from "@/components/messages/message-dialog";
+import { ApplicationCardSkeleton } from "@/components/shared/page-skeleton";
+import { EmptyState } from "@/components/shared/empty-state";
+import { ErrorState } from "@/components/shared/error-state";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 
 interface ApplicationItem {
   id: string;
@@ -32,10 +34,12 @@ interface Pagination {
 }
 
 export default function CandidateApplicationsPage() {
+  useEffect(() => { document.title = "My Applications | Job Board"; }, []);
   const { persona } = usePersona();
   const [applications, setApplications] = useState<ApplicationItem[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [messageApplicationId, setMessageApplicationId] = useState<
     string | null
   >(null);
@@ -45,6 +49,7 @@ export default function CandidateApplicationsPage() {
   const fetchApplications = useCallback(() => {
     if (!candidateId) return;
     setLoading(true);
+    setError(null);
     fetch(`/api/applications?candidateId=${candidateId}&page=1&limit=10`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch");
@@ -55,6 +60,7 @@ export default function CandidateApplicationsPage() {
         setPagination(data.pagination ?? null);
       })
       .catch(() => {
+        setError("Failed to load applications.");
         setApplications([]);
         setPagination(null);
       })
@@ -78,28 +84,19 @@ export default function CandidateApplicationsPage() {
         </p>
       </div>
 
-      {loading ? (
+      {error ? (
+        <ErrorState message={error} onRetry={fetchApplications} />
+      ) : loading ? (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <Card key={i}>
-              <CardContent className="p-6">
-                <div className="h-6 w-1/3 bg-muted animate-pulse rounded" />
-                <div className="h-4 w-1/4 bg-muted animate-pulse rounded mt-2" />
-              </CardContent>
-            </Card>
+            <ApplicationCardSkeleton key={i} />
           ))}
         </div>
       ) : applications.length === 0 ? (
-        <Card>
-          <CardContent className="p-8 text-center">
-            <p className="text-muted-foreground">
-              You haven&apos;t applied to any roles yet.
-            </p>
-            <Button asChild className="mt-4">
-              <Link href="/candidate/roles">Browse Roles</Link>
-            </Button>
-          </CardContent>
-        </Card>
+        <EmptyState
+          title="You haven't applied to any roles yet"
+          action={{ label: "Browse Roles", href: "/candidate/roles" }}
+        />
       ) : (
         <>
           <p className="text-sm text-muted-foreground">
@@ -111,7 +108,7 @@ export default function CandidateApplicationsPage() {
                 key={app.id}
                 application={app}
                 onMessageClick={
-                  app.status === "accepted"
+                  ["interview", "accepted"].includes(app.status)
                     ? () => setMessageApplicationId(app.id)
                     : undefined
                 }

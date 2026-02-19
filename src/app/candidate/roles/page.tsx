@@ -7,6 +7,8 @@ import { usePersona } from "@/providers/persona-provider";
 import { RoleCard } from "@/components/roles/role-card";
 import { RoleFilters } from "@/components/roles/role-filters";
 import { RoleCardSkeleton } from "@/components/shared/role-card-skeleton";
+import { EmptyState } from "@/components/shared/empty-state";
+import { ErrorState } from "@/components/shared/error-state";
 import { Button } from "@/components/ui/button";
 
 interface Company {
@@ -37,6 +39,7 @@ interface Pagination {
 }
 
 export default function CandidateRolesPage() {
+  useEffect(() => { document.title = "Browse Roles | Job Board"; }, []);
   const searchParams = useSearchParams();
   const { persona } = usePersona();
   const [companies, setCompanies] = useState<Company[]>([]);
@@ -117,28 +120,21 @@ export default function CandidateRolesPage() {
       <RoleFilters companies={companies} />
 
       {error && (
-        <p className="text-destructive text-sm">{error}</p>
+        <ErrorState message={error} onRetry={fetchRoles} />
       )}
 
-      {loading ? (
+      {!error && loading ? (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
             <RoleCardSkeleton key={i} />
           ))}
         </div>
       ) : roles.length === 0 ? (
-        <div className="rounded-xl border bg-card p-8 text-center">
-          <p className="text-muted-foreground">
-            {hasFilters
-              ? "No roles match your filters."
-              : "No open roles right now. Check back soon!"}
-          </p>
-          {hasFilters && (
-            <Button asChild variant="outline" className="mt-4">
-              <Link href="/candidate/roles">Clear filters</Link>
-            </Button>
-          )}
-        </div>
+        <EmptyState
+          title={hasFilters ? "No roles match your filters" : "No open roles right now"}
+          description={hasFilters ? undefined : "Check back soon!"}
+          action={hasFilters ? { label: "Clear filters", href: "/candidate/roles" } : undefined}
+        />
       ) : (
         <>
           <p className="text-sm text-muted-foreground">

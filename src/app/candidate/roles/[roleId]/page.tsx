@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { ApplyDialog } from "@/components/applications/apply-dialog";
 import { DescriptionRenderer } from "@/components/shared/description-renderer";
 import { RoleCardSkeleton } from "@/components/shared/role-card-skeleton";
+import { ErrorState } from "@/components/shared/error-state";
 import {
   formatSalaryRange,
   formatRelativeTime,
@@ -60,11 +61,13 @@ export default function RoleDetailPage() {
   const [role, setRole] = useState<RoleDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [error, setError] = useState(false);
   const [applyOpen, setApplyOpen] = useState(false);
 
   const fetchRole = useCallback(() => {
     setLoading(true);
     setNotFound(false);
+    setError(false);
     fetch(`/api/roles/${roleId}`)
       .then((res) => {
         if (res.status === 404) {
@@ -75,7 +78,7 @@ export default function RoleDetailPage() {
         return res.json();
       })
       .then(setRole)
-      .catch(() => setNotFound(true))
+      .catch(() => setError(true))
       .finally(() => setLoading(false));
   }, [roleId]);
 
@@ -99,6 +102,10 @@ export default function RoleDetailPage() {
         <div className="h-48 bg-muted animate-pulse rounded-xl" />
       </div>
     );
+  }
+
+  if (error) {
+    return <ErrorState message="Failed to load role." onRetry={fetchRole} />;
   }
 
   if (notFound || !role) {

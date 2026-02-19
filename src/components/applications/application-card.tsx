@@ -41,7 +41,7 @@ export function ApplicationCard({
   const [expandNote, setExpandNote] = useState(false);
   const createdAt = new Date(application.createdAt);
   const coverNote = application.coverNote?.trim() ?? "";
-  const showMessage = application.status === "accepted";
+  const showMessage = ["interview", "accepted"].includes(application.status);
 
   return (
     <Card>

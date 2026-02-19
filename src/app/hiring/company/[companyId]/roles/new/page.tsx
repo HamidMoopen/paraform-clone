@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -27,6 +27,7 @@ function capitalize(s: string) {
 }
 
 export default function NewRolePage() {
+  useEffect(() => { document.title = "Create Role | Job Board"; }, []);
   const params = useParams();
   const router = useRouter();
   const { persona } = usePersona();

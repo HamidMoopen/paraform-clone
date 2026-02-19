@@ -9,7 +9,6 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Job Board",
   description: "A minimal job board for hiring managers and candidates",
-  icons: { icon: "/favicon.ico" },
 };
 
 export default function RootLayout({

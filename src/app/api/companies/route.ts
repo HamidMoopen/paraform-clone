@@ -4,6 +4,7 @@ import { createCompanyWithHmSchema } from "@/lib/validators";
 
 export const dynamic = "force-dynamic";
 
+/** GET /api/companies — List all companies, or a hiring manager's companies with role/application counts. */
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const hiringManagerId = searchParams.get("hiringManagerId");
@@ -60,6 +61,7 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({ companies });
 }
 
+/** POST /api/companies — Create a new company and associate it with a hiring manager. */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();

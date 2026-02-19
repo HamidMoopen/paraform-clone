@@ -1,0 +1,124 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Company {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  industry    String?
+  location    String?
+  website     String?
+  logoUrl     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  roles          Role[]
+  hiringManagers HiringManagerCompany[]
+}
+
+model HiringManager {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  avatarUrl String?
+  title     String?
+  isPersona Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  companies     HiringManagerCompany[]
+  roles         Role[]
+  sentMessages  Message[]              @relation("SentMessages")
+}
+
+model HiringManagerCompany {
+  id              String   @id @default(cuid())
+  hiringManagerId String
+  companyId       String
+  joinedAt        DateTime @default(now())
+
+  hiringManager HiringManager @relation(fields: [hiringManagerId], references: [id])
+  company       Company       @relation(fields: [companyId], references: [id])
+
+  @@unique([hiringManagerId, companyId])
+}
+
+model Role {
+  id               String    @id @default(cuid())
+  title            String
+  description      String
+  location         String
+  locationType     String    @default("onsite")
+  salaryMin        Int?
+  salaryMax        Int?
+  salaryCurrency   String    @default("USD")
+  employmentType   String    @default("full-time")
+  experienceLevel  String?
+  status           String    @default("draft")
+  deletedAt        DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  companyId       String
+  hiringManagerId String
+
+  company       Company        @relation(fields: [companyId], references: [id])
+  hiringManager HiringManager  @relation(fields: [hiringManagerId], references: [id])
+  applications  Application[]
+}
+
+model Candidate {
+  id              String   @id @default(cuid())
+  name            String
+  email           String   @unique
+  linkedinUrl     String?
+  avatarUrl       String?
+  headline        String?
+  yearsExperience Int?
+  skills          String?
+  bio             String?
+  isPersona       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  applications  Application[]
+  sentMessages  Message[]       @relation("CandidateMessages")
+}
+
+model Application {
+  id          String   @id @default(cuid())
+  status      String   @default("new")
+  coverNote   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  roleId      String
+  candidateId String
+
+  role      Role      @relation(fields: [roleId], references: [id])
+  candidate Candidate @relation(fields: [candidateId], references: [id])
+  messages  Message[]
+
+  @@unique([roleId, candidateId])
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+
+  applicationId   String
+  hiringManagerId String?
+  candidateId     String?
+
+  application   Application     @relation(fields: [applicationId], references: [id])
+  hiringManager HiringManager?  @relation("SentMessages", fields: [hiringManagerId], references: [id])
+  candidate     Candidate?      @relation("CandidateMessages", fields: [candidateId], references: [id])
+}

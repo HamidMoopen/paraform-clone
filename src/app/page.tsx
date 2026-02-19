@@ -6,11 +6,10 @@ import Link from "next/link";
 import { usePersona } from "@/providers/persona-provider";
 import type { CandidatePersona, HiringManagerPersona } from "@/providers/persona-provider";
 import { PersonaCard } from "@/components/shared/persona-card";
+import { CreateHiringManagerDialog } from "@/components/shared/create-hiring-manager-dialog";
+import { CreateCandidateDialog } from "@/components/shared/create-candidate-dialog";
 import { Button } from "@/components/ui/button";
-
-interface CompanyRelation {
-  company: { id: string; name: string };
-}
+import { Plus } from "lucide-react";
 
 interface HiringManagerFromApi {
   id: string;
@@ -18,7 +17,7 @@ interface HiringManagerFromApi {
   email: string;
   avatarUrl: string | null;
   title: string | null;
-  companies: CompanyRelation[];
+  company: { id: string; name: string };
 }
 
 interface CandidateFromApi {
@@ -39,6 +38,8 @@ export default function Home() {
   const { persona, setPersona, clearPersona, isLoading } = usePersona();
   const [data, setData] = useState<PersonasResponse | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [hmDialogOpen, setHmDialogOpen] = useState(false);
+  const [candidateDialogOpen, setCandidateDialogOpen] = useState(false);
 
   useEffect(() => {
     const url =
@@ -75,17 +76,17 @@ export default function Home() {
       email: hm.email,
       avatarUrl: hm.avatarUrl,
       title: hm.title,
-      activeCompanyId: null,
-      activeCompanyName: null,
+      companyId: hm.company.id,
+      companyName: hm.company.name,
     };
     setPersona(p);
-    router.push("/hiring");
+    router.push(`/hiring/company/${hm.company.id}/roles`);
   };
 
   const handleContinue = () => {
     if (!persona) return;
     if (persona.type === "candidate") router.push("/candidate/roles");
-    else router.push("/hiring");
+    else router.push(`/hiring/company/${persona.companyId}/roles`);
   };
 
   if (isLoading) {
@@ -102,7 +103,7 @@ export default function Home() {
         <header className="text-center mb-10">
           <h1 className="text-3xl font-bold tracking-tight">Jobaform</h1>
           <p className="text-muted-foreground mt-1">
-            Demo — pick a persona to explore as a candidate or hiring manager.
+            Pick a persona to explore as a candidate or hiring manager.
           </p>
         </header>
 
@@ -130,10 +131,18 @@ export default function Home() {
                     key={hm.id}
                     name={hm.name}
                     descriptor={hm.title ?? "Hiring Manager"}
-                    companyNames={hm.companies.map((c) => c.company.name)}
+                    companyNames={[hm.company.name]}
                     onClick={() => handleSelectHiringManager(hm)}
                   />
                 ))}
+                <button
+                  type="button"
+                  className="w-full rounded-xl border-2 border-dashed border-muted-foreground/25 p-4 text-sm text-muted-foreground hover:border-primary/50 hover:text-foreground transition-colors flex items-center justify-center gap-2"
+                  onClick={() => setHmDialogOpen(true)}
+                >
+                  <Plus className="h-4 w-4" />
+                  Create New Profile
+                </button>
               </div>
             </section>
             <section>
@@ -149,6 +158,14 @@ export default function Home() {
                     onClick={() => handleSelectCandidate(c)}
                   />
                 ))}
+                <button
+                  type="button"
+                  className="w-full rounded-xl border-2 border-dashed border-muted-foreground/25 p-4 text-sm text-muted-foreground hover:border-primary/50 hover:text-foreground transition-colors flex items-center justify-center gap-2"
+                  onClick={() => setCandidateDialogOpen(true)}
+                >
+                  <Plus className="h-4 w-4" />
+                  Create New Profile
+                </button>
               </div>
             </section>
           </div>
@@ -170,6 +187,15 @@ export default function Home() {
           </Link>
         </div>
       </footer>
+
+      <CreateHiringManagerDialog
+        open={hmDialogOpen}
+        onOpenChange={setHmDialogOpen}
+      />
+      <CreateCandidateDialog
+        open={candidateDialogOpen}
+        onOpenChange={setCandidateDialogOpen}
+      />
     </main>
   );
 }

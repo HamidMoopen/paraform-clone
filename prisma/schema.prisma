@@ -20,7 +20,7 @@ model Company {
   updatedAt   DateTime @updatedAt
 
   roles          Role[]
-  hiringManagers HiringManagerCompany[]
+  hiringManagers HiringManager[]
 }
 
 model HiringManager {
@@ -33,21 +33,11 @@ model HiringManager {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  companies     HiringManagerCompany[]
+  companyId     String
+  company       Company @relation(fields: [companyId], references: [id])
+
   roles         Role[]
   sentMessages  Message[]              @relation("SentMessages")
-}
-
-model HiringManagerCompany {
-  id              String   @id @default(cuid())
-  hiringManagerId String
-  companyId       String
-  joinedAt        DateTime @default(now())
-
-  hiringManager HiringManager @relation(fields: [hiringManagerId], references: [id])
-  company       Company       @relation(fields: [companyId], references: [id])
-
-  @@unique([hiringManagerId, companyId])
 }
 
 model Role {

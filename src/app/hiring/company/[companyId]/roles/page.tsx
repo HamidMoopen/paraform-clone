@@ -53,7 +53,7 @@ export default function HiringCompanyRolesPage() {
   const params = useParams();
   const { persona } = usePersona();
   const companyId = params.companyId as string;
-  const [companyName, setCompanyName] = useState<string>("");
+  const companyName = persona?.type === "hiring-manager" ? persona.companyName : "";
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -69,22 +69,13 @@ export default function HiringCompanyRolesPage() {
       })
       .then((data) => {
         setRoles(data.roles ?? []);
-        const first = (data.roles ?? [])[0];
-        if (first?.company?.name) setCompanyName(first.company.name);
-        else
-          fetch(`/api/companies?hiringManagerId=${persona?.id ?? ""}`)
-            .then((r) => r.json())
-            .then((d) => {
-              const c = (d.companies ?? []).find((x: { id: string }) => x.id === companyId);
-              setCompanyName(c?.name ?? "Company");
-            });
       })
       .catch(() => {
         setError("Failed to load roles.");
         setRoles([]);
       })
       .finally(() => setLoading(false));
-  }, [companyId, persona?.id]);
+  }, [companyId]);
 
   useEffect(() => {
     fetchRoles();

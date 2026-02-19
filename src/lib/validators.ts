@@ -1,15 +1,19 @@
 import { z } from "zod";
 
-export const createCompanySchema = z.object({
-  name: z.string().min(1, "Company name is required").max(100),
-  description: z.string().max(500).optional(),
-  industry: z.string().max(50).optional(),
-  location: z.string().max(100).optional(),
-  website: z.string().url("Must be a valid URL").optional().or(z.literal("")),
+export const createHiringManagerSchema = z.object({
+  name: z.string().min(1, "Name is required").max(100),
+  email: z.string().email("Must be a valid email"),
+  title: z.string().max(100).optional(),
+  companyName: z.string().min(1, "Company name is required").max(100),
+  companyDescription: z.string().max(500).optional(),
+  companyIndustry: z.string().max(50).optional(),
+  companyLocation: z.string().max(100).optional(),
 });
 
-export const createCompanyWithHmSchema = createCompanySchema.extend({
-  hiringManagerId: z.string().min(1, "Hiring manager is required"),
+export const createCandidateSchema = z.object({
+  name: z.string().min(1, "Name is required").max(100),
+  email: z.string().email("Must be a valid email"),
+  headline: z.string().max(100).optional(),
 });
 
 export const createRoleSchema = z

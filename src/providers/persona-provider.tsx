@@ -5,7 +5,6 @@ import {
   useContext,
   useState,
   useEffect,
-  useRef,
   useCallback,
   type ReactNode,
 } from "react";
@@ -26,8 +25,8 @@ export interface HiringManagerPersona {
   email: string;
   avatarUrl: string | null;
   title: string | null;
-  activeCompanyId: string | null;
-  activeCompanyName: string | null;
+  companyId: string;
+  companyName: string;
 }
 
 export type Persona = CandidatePersona | HiringManagerPersona | null;
@@ -35,8 +34,6 @@ export type Persona = CandidatePersona | HiringManagerPersona | null;
 interface PersonaContextType {
   persona: Persona;
   setPersona: (persona: Persona) => void;
-  setActiveCompany: (companyId: string, companyName: string) => void;
-  clearActiveCompany: () => void;
   clearPersona: () => void;
   isLoading: boolean;
 }
@@ -48,14 +45,18 @@ const STORAGE_KEY = "jobboard-persona";
 export function PersonaProvider({ children }: { children: ReactNode }) {
   const [persona, setPersonaState] = useState<Persona>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const personaRef = useRef<Persona>(null);
-  personaRef.current = persona;
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       try {
-        setPersonaState(JSON.parse(stored) as Persona);
+        const parsed = JSON.parse(stored) as Persona;
+        // Clear stale HM personas that lack companyId (old format)
+        if (parsed?.type === "hiring-manager" && !parsed.companyId) {
+          localStorage.removeItem(STORAGE_KEY);
+        } else {
+          setPersonaState(parsed);
+        }
       } catch {
         localStorage.removeItem(STORAGE_KEY);
       }
@@ -72,32 +73,6 @@ export function PersonaProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const setActiveCompany = useCallback((companyId: string, companyName: string) => {
-    const p = personaRef.current;
-    if (p?.type === "hiring-manager") {
-      const updated: HiringManagerPersona = {
-        ...p,
-        activeCompanyId: companyId,
-        activeCompanyName: companyName,
-      };
-      setPersonaState(updated);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    }
-  }, []);
-
-  const clearActiveCompany = useCallback(() => {
-    const p = personaRef.current;
-    if (p?.type === "hiring-manager") {
-      const updated: HiringManagerPersona = {
-        ...p,
-        activeCompanyId: null,
-        activeCompanyName: null,
-      };
-      setPersonaState(updated);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    }
-  }, []);
-
   const clearPersona = useCallback(() => {
     setPersonaState(null);
     localStorage.removeItem(STORAGE_KEY);
@@ -108,8 +83,6 @@ export function PersonaProvider({ children }: { children: ReactNode }) {
       value={{
         persona,
         setPersona,
-        setActiveCompany,
-        clearActiveCompany,
         clearPersona,
         isLoading,
       }}

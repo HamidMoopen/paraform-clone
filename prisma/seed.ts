@@ -6,7 +6,6 @@ async function main() {
   await prisma.message.deleteMany();
   await prisma.application.deleteMany();
   await prisma.role.deleteMany();
-  await prisma.hiringManagerCompany.deleteMany();
   await prisma.hiringManager.deleteMany();
   await prisma.candidate.deleteMany();
   await prisma.company.deleteMany();
@@ -54,6 +53,7 @@ async function main() {
       title: "Recruiter",
       avatarUrl: null,
       isPersona: true,
+      companyId: acmeAI.id,
     },
   });
 
@@ -64,6 +64,7 @@ async function main() {
       title: "Head of Product",
       avatarUrl: null,
       isPersona: true,
+      companyId: cloudSync.id,
     },
   });
 
@@ -74,17 +75,8 @@ async function main() {
       title: "Recruiter",
       avatarUrl: null,
       isPersona: true,
+      companyId: healthStack.id,
     },
-  });
-
-  await prisma.hiringManagerCompany.createMany({
-    data: [
-      { hiringManagerId: sarah.id, companyId: acmeAI.id },
-      { hiringManagerId: marcus.id, companyId: cloudSync.id },
-      { hiringManagerId: priya.id, companyId: healthStack.id },
-      { hiringManagerId: sarah.id, companyId: cloudSync.id },
-      { hiringManagerId: priya.id, companyId: acmeAI.id },
-    ],
   });
 
   const alex = await prisma.candidate.create({

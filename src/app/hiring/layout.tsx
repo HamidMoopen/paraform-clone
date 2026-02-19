@@ -17,7 +17,7 @@ export default function HiringLayout({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { persona, clearPersona, clearActiveCompany, isLoading } = usePersona();
+  const { persona, clearPersona, isLoading } = usePersona();
 
   useEffect(() => {
     if (isLoading) return;
@@ -25,11 +25,6 @@ export default function HiringLayout({
       router.replace("/");
     }
   }, [persona, isLoading, router]);
-
-  const activeCompanyId =
-    persona?.type === "hiring-manager" ? persona.activeCompanyId : null;
-  const companyName =
-    persona?.type === "hiring-manager" ? persona.activeCompanyName : null;
 
   if (isLoading) {
     return (
@@ -58,38 +53,32 @@ export default function HiringLayout({
     return null;
   }
 
+  const companyId = persona.companyId;
+  const companyName = persona.companyName;
+
   return (
     <div className="min-h-screen flex flex-col border-l-4 border-primary/30 bg-muted/20">
       <header className="border-b sticky top-0 z-10 bg-background">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between gap-6">
           <nav className="flex items-center gap-5">
             <Link
-              href="/hiring"
+              href={`/hiring/company/${companyId}/roles`}
               className="font-semibold text-lg hover:opacity-80"
-              onClick={() => {
-                if (activeCompanyId) {
-                  clearActiveCompany();
-                }
-              }}
             >
               Jobaform
             </Link>
-            {activeCompanyId && (
-              <>
-                <Separator orientation="vertical" className="h-5" />
-                <Link
-                  href={`/hiring/company/${activeCompanyId}/roles`}
-                  className={cn(
-                    "text-sm font-medium transition-colors hover:text-foreground",
-                    pathname.includes("/roles")
-                      ? "text-foreground"
-                      : "text-muted-foreground"
-                  )}
-                >
-                  {companyName ?? "Roles"}
-                </Link>
-              </>
-            )}
+            <Separator orientation="vertical" className="h-5" />
+            <Link
+              href={`/hiring/company/${companyId}/roles`}
+              className={cn(
+                "text-sm font-medium transition-colors hover:text-foreground",
+                pathname.includes("/roles")
+                  ? "text-foreground"
+                  : "text-muted-foreground"
+              )}
+            >
+              {companyName}
+            </Link>
             <Link
               href="/hiring/messages"
               className={cn(
@@ -119,19 +108,6 @@ export default function HiringLayout({
               </div>
             </div>
             <Separator orientation="vertical" className="h-5" />
-            {activeCompanyId && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-xs h-7 px-2 text-muted-foreground"
-                onClick={() => {
-                  clearActiveCompany();
-                  router.push("/hiring");
-                }}
-              >
-                Switch Company
-              </Button>
-            )}
             <Button
               variant="ghost"
               size="sm"

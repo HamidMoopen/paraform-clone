@@ -51,7 +51,7 @@ async function main() {
     data: {
       name: "Sarah Chen",
       email: "sarah@acmeai.example.com",
-      title: "VP of Engineering",
+      title: "Recruiter",
       avatarUrl: null,
       isPersona: true,
     },
@@ -71,7 +71,7 @@ async function main() {
     data: {
       name: "Priya Patel",
       email: "priya@healthstack.example.com",
-      title: "Engineering Manager",
+      title: "Recruiter",
       avatarUrl: null,
       isPersona: true,
     },
@@ -83,6 +83,7 @@ async function main() {
       { hiringManagerId: marcus.id, companyId: cloudSync.id },
       { hiringManagerId: priya.id, companyId: healthStack.id },
       { hiringManagerId: sarah.id, companyId: cloudSync.id },
+      { hiringManagerId: priya.id, companyId: acmeAI.id },
     ],
   });
 

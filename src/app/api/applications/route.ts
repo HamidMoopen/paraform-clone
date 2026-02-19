@@ -54,6 +54,9 @@ export async function GET(request: NextRequest) {
         role: {
           include: {
             company: { select: { id: true, name: true, logoUrl: true } },
+            hiringManager: {
+              select: { id: true, name: true, avatarUrl: true },
+            },
           },
         },
       },

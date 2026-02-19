@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePersona } from "@/providers/persona-provider";
 import { ApplicationCard } from "@/components/applications/application-card";
+import { MessageDialog } from "@/components/messages/message-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -19,6 +20,7 @@ interface ApplicationItem {
     salaryMax: number | null;
     salaryCurrency: string;
     company: { id: string; name: string; logoUrl: string | null };
+    hiringManager?: { id: string; name: string; avatarUrl: string | null };
   };
 }
 
@@ -34,6 +36,9 @@ export default function CandidateApplicationsPage() {
   const [applications, setApplications] = useState<ApplicationItem[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [loading, setLoading] = useState(true);
+  const [messageApplicationId, setMessageApplicationId] = useState<
+    string | null
+  >(null);
 
   const candidateId = persona?.type === "candidate" ? persona.id : undefined;
 
@@ -102,9 +107,34 @@ export default function CandidateApplicationsPage() {
           </p>
           <div className="space-y-4">
             {applications.map((app) => (
-              <ApplicationCard key={app.id} application={app} />
+              <ApplicationCard
+                key={app.id}
+                application={app}
+                onMessageClick={
+                  app.status === "accepted"
+                    ? () => setMessageApplicationId(app.id)
+                    : undefined
+                }
+              />
             ))}
           </div>
+          {messageApplicationId && persona?.type === "candidate" && (() => {
+            const app = applications.find(
+              (a) => a.id === messageApplicationId
+            );
+            if (!app) return null;
+            return (
+              <MessageDialog
+                open={true}
+                onOpenChange={(open) => !open && setMessageApplicationId(null)}
+                applicationId={app.id}
+                roleTitle={app.role.title}
+                companyName={app.role.company.name}
+                otherPartyName={app.role.hiringManager?.name ?? "Hiring Manager"}
+                candidateId={persona.id}
+              />
+            );
+          })()}
           {totalPages > 1 && (
             <div className="flex justify-center gap-2 pt-4">
               <span className="text-sm text-muted-foreground">

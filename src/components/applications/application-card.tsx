@@ -28,11 +28,16 @@ interface ApplicationCardProps {
       salaryMax: number | null;
       salaryCurrency: string;
       company: { id: string; name: string; logoUrl: string | null };
+      hiringManager?: { id: string; name: string; avatarUrl: string | null };
     };
   };
+  onMessageClick?: () => void;
 }
 
-export function ApplicationCard({ application }: ApplicationCardProps) {
+export function ApplicationCard({
+  application,
+  onMessageClick,
+}: ApplicationCardProps) {
   const [expandNote, setExpandNote] = useState(false);
   const createdAt = new Date(application.createdAt);
   const coverNote = application.coverNote?.trim() ?? "";
@@ -101,8 +106,12 @@ export function ApplicationCard({ application }: ApplicationCardProps) {
           </div>
         )}
         {showMessage && (
-          <Button variant="outline" size="sm" asChild>
-            <Link href="#">Message</Link>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onMessageClick}
+          >
+            Message
           </Button>
         )}
       </CardContent>

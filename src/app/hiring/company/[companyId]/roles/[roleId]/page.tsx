@@ -227,14 +227,19 @@ export default function HiringRoleDetailPage() {
               {role._count.applications} total
               {applicationSummary ? ` · ${applicationSummary}` : ""}
             </p>
-            <Button asChild className="mt-3">
-              <Link
-                href={`/hiring/company/${companyId}/roles/${roleId}/applications`}
-              >
-                <Users className="h-4 w-4 mr-2" />
-                View Applications ({role._count.applications})
-              </Link>
-            </Button>
+            <div className="flex flex-wrap gap-2 mt-3">
+              <Button asChild>
+                <Link
+                  href={`/hiring/company/${companyId}/roles/${roleId}/applications`}
+                >
+                  <Users className="h-4 w-4 mr-2" />
+                  View Applications ({role._count.applications})
+                </Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/hiring/messages">Messages</Link>
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>

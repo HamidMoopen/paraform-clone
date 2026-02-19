@@ -13,7 +13,7 @@ import { updateCandidateProfileSchema } from "@/lib/validators";
 const BIO_MAX = 1000;
 
 export default function CandidateProfilePage() {
-  useEffect(() => { document.title = "Edit Profile | Job Board"; }, []);
+  useEffect(() => { document.title = "Edit Profile | Jobaform"; }, []);
   const { persona } = usePersona();
   const [form, setForm] = useState({
     name: "",

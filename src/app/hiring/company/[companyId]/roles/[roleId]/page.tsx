@@ -96,7 +96,7 @@ export default function HiringRoleDetailPage() {
 
   useEffect(() => {
     if (role) {
-      document.title = `${role.title} \u2014 Manage | Job Board`;
+      document.title = `${role.title} \u2014 Manage | Jobaform`;
     }
   }, [role]);
 

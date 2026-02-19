@@ -92,8 +92,8 @@ export default function HiringCompanyRolesPage() {
 
   useEffect(() => {
     document.title = companyName
-      ? `Roles \u2014 ${companyName} | Job Board`
-      : "Roles | Job Board";
+      ? `Roles \u2014 ${companyName} | Jobaform`
+      : "Roles | Jobaform";
   }, [companyName]);
 
   if (persona?.type !== "hiring-manager") return null;
@@ -171,7 +171,7 @@ export default function HiringCompanyRolesPage() {
                       >
                         <Card
                           className={cn(
-                            "transition-colors hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
+                            "transition-all duration-150 hover:border-accent hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
                           )}
                         >
                           <CardContent className="p-4">

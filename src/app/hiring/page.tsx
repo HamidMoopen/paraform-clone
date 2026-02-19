@@ -26,7 +26,7 @@ interface CompanyCard {
 }
 
 export default function HiringDashboardPage() {
-  useEffect(() => { document.title = "Your Companies | Job Board"; }, []);
+  useEffect(() => { document.title = "Your Companies | Jobaform"; }, []);
   const router = useRouter();
   const { persona, setActiveCompany } = usePersona();
   const [companies, setCompanies] = useState<CompanyCard[]>([]);
@@ -56,9 +56,9 @@ export default function HiringDashboardPage() {
     fetchCompanies();
   }, [fetchCompanies]);
 
-  const handleSelectCompany = (companyId: string) => {
-    setActiveCompany(companyId);
-    router.push(`/hiring/company/${companyId}/roles`);
+  const handleSelectCompany = (company: CompanyCard) => {
+    setActiveCompany(company.id, company.name);
+    router.push(`/hiring/company/${company.id}/roles`);
   };
 
   if (persona?.type !== "hiring-manager") return null;
@@ -93,9 +93,9 @@ export default function HiringDashboardPage() {
             <Card
               key={company.id}
               className={cn(
-                "cursor-pointer transition-colors hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
+                "cursor-pointer transition-all duration-150 hover:border-accent hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
               )}
-              onClick={() => handleSelectCompany(company.id)}
+              onClick={() => handleSelectCompany(company)}
             >
               <CardContent className="p-6">
                 <div className="flex items-center gap-4">

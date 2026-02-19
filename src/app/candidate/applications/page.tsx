@@ -34,7 +34,7 @@ interface Pagination {
 }
 
 export default function CandidateApplicationsPage() {
-  useEffect(() => { document.title = "My Applications | Job Board"; }, []);
+  useEffect(() => { document.title = "My Applications | Jobaform"; }, []);
   const { persona } = usePersona();
   const [applications, setApplications] = useState<ApplicationItem[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);

@@ -27,6 +27,7 @@ export interface HiringManagerPersona {
   avatarUrl: string | null;
   title: string | null;
   activeCompanyId: string | null;
+  activeCompanyName: string | null;
 }
 
 export type Persona = CandidatePersona | HiringManagerPersona | null;
@@ -34,7 +35,7 @@ export type Persona = CandidatePersona | HiringManagerPersona | null;
 interface PersonaContextType {
   persona: Persona;
   setPersona: (persona: Persona) => void;
-  setActiveCompany: (companyId: string) => void;
+  setActiveCompany: (companyId: string, companyName: string) => void;
   clearActiveCompany: () => void;
   clearPersona: () => void;
   isLoading: boolean;
@@ -71,12 +72,13 @@ export function PersonaProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const setActiveCompany = useCallback((companyId: string) => {
+  const setActiveCompany = useCallback((companyId: string, companyName: string) => {
     const p = personaRef.current;
     if (p?.type === "hiring-manager") {
       const updated: HiringManagerPersona = {
         ...p,
         activeCompanyId: companyId,
+        activeCompanyName: companyName,
       };
       setPersonaState(updated);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
@@ -89,6 +91,7 @@ export function PersonaProvider({ children }: { children: ReactNode }) {
       const updated: HiringManagerPersona = {
         ...p,
         activeCompanyId: null,
+        activeCompanyName: null,
       };
       setPersonaState(updated);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));

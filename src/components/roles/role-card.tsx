@@ -45,7 +45,7 @@ export function RoleCard({ role }: RoleCardProps) {
     <Link href={`/candidate/roles/${role.id}`}>
       <Card
         className={cn(
-          "transition-colors hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
+          "transition-all duration-150 hover:border-accent hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
         )}
       >
         <CardHeader className="flex flex-row items-start gap-4 pb-2">

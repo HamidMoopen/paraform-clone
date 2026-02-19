@@ -41,11 +41,11 @@ export const APPLICATION_STATUS_LABELS: Record<string, string> = {
 };
 
 export const APPLICATION_STATUS_COLORS: Record<string, string> = {
-  new: "bg-blue-100 text-blue-800",
-  reviewing: "bg-yellow-100 text-yellow-800",
-  interview: "bg-purple-100 text-purple-800",
-  accepted: "bg-green-100 text-green-800",
-  rejected: "bg-red-100 text-red-800",
+  new: "bg-blue-500/15 text-blue-400",
+  reviewing: "bg-yellow-500/15 text-yellow-400",
+  interview: "bg-purple-500/15 text-purple-400",
+  accepted: "bg-green-500/15 text-green-400",
+  rejected: "bg-red-500/15 text-red-400",
 };
 
 export const ROLE_STATUS_LABELS: Record<string, string> = {
@@ -55,7 +55,7 @@ export const ROLE_STATUS_LABELS: Record<string, string> = {
 };
 
 export const ROLE_STATUS_COLORS: Record<string, string> = {
-  draft: "bg-gray-100 text-gray-800",
-  published: "bg-green-100 text-green-800",
-  closed: "bg-red-100 text-red-800",
+  draft: "bg-muted text-muted-foreground",
+  published: "bg-green-500/15 text-green-400",
+  closed: "bg-red-500/15 text-red-400",
 };

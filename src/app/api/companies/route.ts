@@ -21,9 +21,10 @@ export async function GET(request: NextRequest) {
                 status: { in: ["draft", "published", "closed"] },
               },
               include: {
-                applications: {
-                  where: { status: "new" },
-                  select: { id: true },
+                _count: {
+                  select: {
+                    applications: { where: { status: "new" } },
+                  },
                 },
               },
             },
@@ -35,7 +36,7 @@ export async function GET(request: NextRequest) {
     const companies = hmCompanies.map(({ company }) => {
       const roleCount = company.roles.length;
       const newApplicationCount = company.roles.reduce(
-        (sum, r) => sum + r.applications.length,
+        (sum, r) => sum + r._count.applications,
         0
       );
       return {

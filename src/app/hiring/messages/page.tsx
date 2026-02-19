@@ -33,7 +33,7 @@ interface ThreadItem {
 }
 
 export default function HiringMessagesPage() {
-  useEffect(() => { document.title = "Messages | Job Board"; }, []);
+  useEffect(() => { document.title = "Messages | Jobaform"; }, []);
   const searchParams = useSearchParams();
   const { persona } = usePersona();
   const threadParam = searchParams.get("thread");
@@ -105,7 +105,7 @@ export default function HiringMessagesPage() {
                     <div
                       className={cn(
                         "p-4 border-b hover:bg-muted/50 transition-colors",
-                        isActive && "bg-muted"
+                        isActive && "bg-muted border-l-2 border-l-primary"
                       )}
                     >
                       <div className="flex gap-3">

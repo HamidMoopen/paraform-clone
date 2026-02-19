@@ -27,7 +27,7 @@ function capitalize(s: string) {
 }
 
 export default function NewRolePage() {
-  useEffect(() => { document.title = "Create Role | Job Board"; }, []);
+  useEffect(() => { document.title = "Create Role | Jobaform"; }, []);
   const params = useParams();
   const router = useRouter();
   const { persona } = usePersona();

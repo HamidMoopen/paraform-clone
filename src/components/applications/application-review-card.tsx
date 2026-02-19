@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -15,7 +14,6 @@ import {
 } from "@/components/ui/select";
 import {
   APPLICATION_STATUS_LABELS,
-  APPLICATION_STATUS_COLORS,
 } from "@/lib/constants";
 import { formatRelativeTime, getInitials } from "@/lib/utils";
 import { cn } from "@/lib/utils";
@@ -84,7 +82,7 @@ export function ApplicationReviewCard({
               <p className="font-semibold truncate">{c.name}</p>
               {c.headline && (
                 <p className="text-sm text-muted-foreground truncate">
-                  {c.headline}
+                  {c.headline.replace(/\s*·\s*\d+\s*years?\s*experience/i, "")}
                 </p>
               )}
               <p className="text-xs text-muted-foreground mt-0.5">
@@ -110,16 +108,6 @@ export function ApplicationReviewCard({
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2 sm:ml-auto sm:shrink-0">
-            <Badge
-              className={cn(
-                "text-xs",
-                APPLICATION_STATUS_COLORS[application.status] ??
-                  "bg-muted text-muted-foreground"
-              )}
-            >
-              {APPLICATION_STATUS_LABELS[application.status] ??
-                application.status}
-            </Badge>
             <Select
               value={application.status}
               onValueChange={(v) => v !== application.status && onStatusChange(v)}
@@ -138,7 +126,7 @@ export function ApplicationReviewCard({
                 ))}
               </SelectContent>
             </Select>
-            {application.status === "accepted" && (
+            {(application.status === "interview" || application.status === "accepted") && (
               <Button variant="outline" size="sm" asChild>
                 <Link
                   href={`/hiring/messages?thread=${application.id}`}
@@ -171,11 +159,16 @@ export function ApplicationReviewCard({
                 </>
               )}
             </button>
-            {coverExpanded && (
-              <p className="mt-2 text-sm text-muted-foreground whitespace-pre-wrap border rounded-md p-3 bg-muted/30">
+            <div
+              className={cn(
+                "overflow-hidden transition-all duration-200",
+                coverExpanded ? "max-h-96 opacity-100 mt-2" : "max-h-0 opacity-0"
+              )}
+            >
+              <p className="text-sm text-muted-foreground whitespace-pre-wrap border rounded-md p-3 bg-muted/30">
                 {application.coverNote}
               </p>
-            )}
+            </div>
           </div>
         )}
       </CardContent>

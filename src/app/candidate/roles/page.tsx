@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { usePersona } from "@/providers/persona-provider";
@@ -10,11 +10,6 @@ import { RoleCardSkeleton } from "@/components/shared/role-card-skeleton";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
 import { Button } from "@/components/ui/button";
-
-interface Company {
-  id: string;
-  name: string;
-}
 
 interface Role {
   id: string;
@@ -39,10 +34,9 @@ interface Pagination {
 }
 
 export default function CandidateRolesPage() {
-  useEffect(() => { document.title = "Browse Roles | Job Board"; }, []);
+  useEffect(() => { document.title = "Browse Roles | Jobaform"; }, []);
   const searchParams = useSearchParams();
   const { persona } = usePersona();
-  const [companies, setCompanies] = useState<Company[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [loading, setLoading] = useState(true);
@@ -50,12 +44,16 @@ export default function CandidateRolesPage() {
 
   const candidateId = persona?.type === "candidate" ? persona.id : undefined;
 
-  useEffect(() => {
-    fetch("/api/companies")
-      .then((res) => res.json())
-      .then((data) => setCompanies(data.companies ?? []))
-      .catch(() => setCompanies([]));
-  }, []);
+  const companies = useMemo(() => {
+    const seen = new Set<string>();
+    return roles
+      .map((r) => r.company)
+      .filter((c) => {
+        if (seen.has(c.id)) return false;
+        seen.add(c.id);
+        return true;
+      });
+  }, [roles]);
 
   const fetchRoles = useCallback(() => {
     if (!candidateId) return;

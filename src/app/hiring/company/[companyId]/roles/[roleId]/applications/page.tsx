@@ -72,8 +72,8 @@ export default function HiringRoleApplicationsPage() {
 
   useEffect(() => {
     document.title = roleTitle
-      ? `Applications \u2014 ${roleTitle} | Job Board`
-      : "Applications | Job Board";
+      ? `Applications \u2014 ${roleTitle} | Jobaform`
+      : "Applications | Jobaform";
   }, [roleTitle]);
 
   const handleStatusChange = async (applicationId: string, newStatus: string) => {

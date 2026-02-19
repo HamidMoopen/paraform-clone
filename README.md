@@ -1,4 +1,4 @@
-# Job Board
+# Jobaform
 
 A minimal job board application built as a take-home project.
 

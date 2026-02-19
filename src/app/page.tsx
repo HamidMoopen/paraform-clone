@@ -76,6 +76,7 @@ export default function Home() {
       avatarUrl: hm.avatarUrl,
       title: hm.title,
       activeCompanyId: null,
+      activeCompanyName: null,
     };
     setPersona(p);
     router.push("/hiring");
@@ -99,7 +100,7 @@ export default function Home() {
     <main className="min-h-screen flex flex-col">
       <div className="flex-1 container max-w-4xl mx-auto px-4 py-12">
         <header className="text-center mb-10">
-          <h1 className="text-3xl font-bold tracking-tight">Job Board</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Jobaform</h1>
           <p className="text-muted-foreground mt-1">
             Demo — pick a persona to explore as a candidate or hiring manager.
           </p>

@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createCompanySchema } from "@/lib/validators";
 
 export default function NewCompanyPage() {
-  useEffect(() => { document.title = "Create Company | Job Board"; }, []);
+  useEffect(() => { document.title = "Create Company | Jobaform"; }, []);
   const router = useRouter();
   const { persona, setActiveCompany } = usePersona();
   const [form, setForm] = useState({
@@ -72,7 +72,7 @@ export default function NewCompanyPage() {
         return;
       }
       toast.success("Company created!");
-      setActiveCompany(data.id);
+      setActiveCompany(data.id, parsed.data.name);
       router.replace(`/hiring/company/${data.id}/roles`);
     } finally {
       setSaving(false);

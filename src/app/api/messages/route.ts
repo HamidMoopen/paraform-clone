@@ -68,36 +68,32 @@ export async function GET(request: NextRequest) {
           orderBy: { createdAt: "desc" },
           take: 1,
         },
+        _count: { select: { messages: true } },
       },
     });
 
-    const threads = await Promise.all(
-      applications.map(async (app) => {
-        const count = await prisma.message.count({
-          where: { applicationId: app.id },
-        });
-        const lastMsg = app.messages[0];
-        return {
-          applicationId: app.id,
-          roleId: app.role.id,
-          companyId: app.role.company.id,
-          roleTitle: app.role.title,
-          companyName: app.role.company.name,
-          otherParty: {
-            name: app.candidate.name,
-            avatarUrl: app.candidate.avatarUrl,
-          },
-          lastMessage: lastMsg
-            ? {
-                content: lastMsg.content,
-                createdAt: lastMsg.createdAt,
-                isFromMe: lastMsg.hiringManagerId === hiringManagerId,
-              }
-            : null,
-          messageCount: count,
-        };
-      })
-    );
+    const threads = applications.map((app) => {
+      const lastMsg = app.messages[0];
+      return {
+        applicationId: app.id,
+        roleId: app.role.id,
+        companyId: app.role.company.id,
+        roleTitle: app.role.title,
+        companyName: app.role.company.name,
+        otherParty: {
+          name: app.candidate.name,
+          avatarUrl: app.candidate.avatarUrl,
+        },
+        lastMessage: lastMsg
+          ? {
+              content: lastMsg.content,
+              createdAt: lastMsg.createdAt,
+              isFromMe: lastMsg.hiringManagerId === hiringManagerId,
+            }
+          : null,
+        messageCount: app._count.messages,
+      };
+    });
 
     threads.sort((a, b) => {
       const aTime = a.lastMessage?.createdAt ?? new Date(0);
@@ -125,34 +121,30 @@ export async function GET(request: NextRequest) {
           orderBy: { createdAt: "desc" },
           take: 1,
         },
+        _count: { select: { messages: true } },
       },
     });
 
-    const threads = await Promise.all(
-      applications.map(async (app) => {
-        const count = await prisma.message.count({
-          where: { applicationId: app.id },
-        });
-        const lastMsg = app.messages[0];
-        return {
-          applicationId: app.id,
-          roleTitle: app.role.title,
-          companyName: app.role.company.name,
-          otherParty: {
-            name: app.role.hiringManager.name,
-            avatarUrl: app.role.hiringManager.avatarUrl,
-          },
-          lastMessage: lastMsg
-            ? {
-                content: lastMsg.content,
-                createdAt: lastMsg.createdAt,
-                isFromMe: lastMsg.candidateId === candidateId,
-              }
-            : null,
-          messageCount: count,
-        };
-      })
-    );
+    const threads = applications.map((app) => {
+      const lastMsg = app.messages[0];
+      return {
+        applicationId: app.id,
+        roleTitle: app.role.title,
+        companyName: app.role.company.name,
+        otherParty: {
+          name: app.role.hiringManager.name,
+          avatarUrl: app.role.hiringManager.avatarUrl,
+        },
+        lastMessage: lastMsg
+          ? {
+              content: lastMsg.content,
+              createdAt: lastMsg.createdAt,
+              isFromMe: lastMsg.candidateId === candidateId,
+            }
+          : null,
+        messageCount: app._count.messages,
+      };
+    });
 
     threads.sort((a, b) => {
       const aTime = a.lastMessage?.createdAt ?? new Date(0);

@@ -72,6 +72,9 @@ model Role {
   company       Company        @relation(fields: [companyId], references: [id])
   hiringManager HiringManager  @relation(fields: [hiringManagerId], references: [id])
   applications  Application[]
+
+  @@index([companyId])
+  @@index([hiringManagerId])
 }
 
 model Candidate {
@@ -107,6 +110,8 @@ model Application {
   messages  Message[]
 
   @@unique([roleId, candidateId])
+  @@index([roleId])
+  @@index([candidateId])
 }
 
 model Message {
@@ -121,4 +126,6 @@ model Message {
   application   Application     @relation(fields: [applicationId], references: [id])
   hiringManager HiringManager?  @relation("SentMessages", fields: [hiringManagerId], references: [id])
   candidate     Candidate?      @relation("CandidateMessages", fields: [candidateId], references: [id])
+
+  @@index([applicationId])
 }

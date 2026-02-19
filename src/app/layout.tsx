@@ -7,7 +7,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Job Board",
+  title: "Jobaform",
   description: "A minimal job board for hiring managers and candidates",
 };
 
@@ -21,7 +21,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <PersonaProvider>
           {children}
-          <Toaster position="bottom-right" richColors />
+          <Toaster position="bottom-right" richColors theme="dark" />
         </PersonaProvider>
       </body>
     </html>

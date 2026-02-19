@@ -23,7 +23,7 @@ export function PersonaCard({
   return (
     <Card
       className={cn(
-        "cursor-pointer transition-colors hover:bg-accent/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "cursor-pointer transition-all duration-150 hover:border-accent hover:bg-accent/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         className
       )}
       onClick={onClick}

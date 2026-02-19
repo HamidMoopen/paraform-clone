@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
   const totalPages = Math.ceil(total / limit);
   const items = applications.map((a) => ({
     ...a,
-    messagingAvailable: a.status === "accepted",
+    messagingAvailable: a.status === "interview" || a.status === "accepted",
   }));
 
   return NextResponse.json({

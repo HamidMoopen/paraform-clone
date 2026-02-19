@@ -6,6 +6,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { usePersona } from "@/providers/persona-provider";
 import { getInitials } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
 export default function CandidateLayout({
@@ -56,19 +58,18 @@ export default function CandidateLayout({
     { href: "/candidate/roles", label: "Browse Roles" },
     { href: "/candidate/applications", label: "My Applications" },
     { href: "/candidate/messages", label: "Messages" },
-    { href: "/candidate/profile", label: "Profile" },
   ];
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <header className="border-b sticky top-0 z-10 bg-background">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between gap-6">
-          <nav className="flex items-center gap-6">
+          <nav className="flex items-center gap-5">
             <Link
               href="/candidate/roles"
               className="font-semibold text-lg hover:opacity-80"
             >
-              Job Board
+              Jobaform
             </Link>
             {navLinks.map(({ href, label }) => {
               const isActive =
@@ -86,7 +87,7 @@ export default function CandidateLayout({
                   className={cn(
                     "text-sm font-medium transition-colors hover:text-foreground",
                     isActive
-                      ? "text-foreground underline underline-offset-4"
+                      ? "text-foreground"
                       : "text-muted-foreground"
                   )}
                 >
@@ -96,25 +97,31 @@ export default function CandidateLayout({
             })}
           </nav>
           <div className="flex items-center gap-3">
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="text-xs bg-primary/10 text-primary">
-                {getInitials(persona.name)}
-              </AvatarFallback>
-            </Avatar>
-            <span className="text-sm font-medium hidden sm:inline">
-              {persona.name}
-            </span>
             <Link
-              href="/"
-              onClick={(e) => {
-                e.preventDefault();
+              href="/candidate/profile"
+              className="flex items-center gap-2 transition-opacity hover:opacity-80"
+            >
+              <Avatar className="h-7 w-7">
+                <AvatarFallback className="text-[10px] bg-primary/10 text-primary">
+                  {getInitials(persona.name)}
+                </AvatarFallback>
+              </Avatar>
+              <span className="text-sm font-medium hidden sm:inline">
+                {persona.name}
+              </span>
+            </Link>
+            <Separator orientation="vertical" className="h-5" />
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-xs h-7 px-2 text-muted-foreground"
+              onClick={() => {
                 clearPersona();
                 router.push("/");
               }}
-              className="text-sm text-muted-foreground hover:text-foreground"
             >
               Switch Persona
-            </Link>
+            </Button>
           </div>
         </div>
       </header>

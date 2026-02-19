@@ -12,6 +12,42 @@ export async function GET(
   const { roleId } = await params;
   const { searchParams } = new URL(request.url);
   const forHm = searchParams.get("forHm") === "true";
+  const candidateId = searchParams.get("candidateId");
+
+  if (candidateId) {
+    const [role, existing] = await Promise.all([
+      prisma.role.findUnique({
+        where: { id: roleId },
+        include: {
+          company: true,
+          _count: { select: { applications: true } },
+          ...(forHm
+            ? { applications: { select: { status: true } } }
+            : {}),
+        },
+      }),
+      prisma.application.findUnique({
+        where: { roleId_candidateId: { roleId, candidateId } },
+        select: { id: true, status: true },
+      }),
+    ]);
+
+    if (!role) {
+      return NextResponse.json(
+        { error: "Role not found" },
+        { status: 404 }
+      );
+    }
+
+    if (!forHm && (role.deletedAt != null || role.status !== "published")) {
+      return NextResponse.json(
+        { error: "Role not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ ...role, hasApplied: !!existing, applicationStatus: existing?.status ?? null });
+  }
 
   const role = await prisma.role.findUnique({
     where: { id: roleId },

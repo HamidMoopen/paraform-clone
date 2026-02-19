@@ -11,6 +11,8 @@ import { ApplyDialog } from "@/components/applications/apply-dialog";
 import { DescriptionRenderer } from "@/components/shared/description-renderer";
 import { RoleCardSkeleton } from "@/components/shared/role-card-skeleton";
 import { ErrorState } from "@/components/shared/error-state";
+import { APPLICATION_STATUS_LABELS, APPLICATION_STATUS_COLORS } from "@/lib/constants";
+import { CheckCircle2 } from "lucide-react";
 import {
   formatSalaryRange,
   formatRelativeTime,
@@ -51,6 +53,8 @@ interface RoleDetail {
     logoUrl: string | null;
   };
   _count: { applications: number };
+  hasApplied?: boolean;
+  applicationStatus?: string | null;
 }
 
 export default function RoleDetailPage() {
@@ -64,11 +68,14 @@ export default function RoleDetailPage() {
   const [error, setError] = useState(false);
   const [applyOpen, setApplyOpen] = useState(false);
 
+  const candidateId = persona?.type === "candidate" ? persona.id : null;
+
   const fetchRole = useCallback(() => {
     setLoading(true);
     setNotFound(false);
     setError(false);
-    fetch(`/api/roles/${roleId}`)
+    const params = candidateId ? `?candidateId=${candidateId}` : "";
+    fetch(`/api/roles/${roleId}${params}`)
       .then((res) => {
         if (res.status === 404) {
           setNotFound(true);
@@ -80,7 +87,7 @@ export default function RoleDetailPage() {
       .then(setRole)
       .catch(() => setError(true))
       .finally(() => setLoading(false));
-  }, [roleId]);
+  }, [roleId, candidateId]);
 
   useEffect(() => {
     fetchRole();
@@ -88,7 +95,7 @@ export default function RoleDetailPage() {
 
   useEffect(() => {
     if (role)
-      document.title = `${role.title} at ${role.company.name} | Job Board`;
+      document.title = `${role.title} at ${role.company.name} | Jobaform`;
   }, [role]);
 
   const handleApplySuccess = () => {
@@ -149,9 +156,17 @@ export default function RoleDetailPage() {
               </h1>
             </div>
           </div>
-          {candidate && (
+          {candidate && !role.hasApplied && (
             <Button onClick={() => setApplyOpen(true)} size="lg">
               Apply Now
+            </Button>
+          )}
+          {candidate && role.hasApplied && (
+            <Button asChild variant="outline" size="lg">
+              <Link href="/candidate/applications">
+                <CheckCircle2 className="h-4 w-4 mr-2" />
+                Applied{role.applicationStatus ? ` · ${APPLICATION_STATUS_LABELS[role.applicationStatus] ?? role.applicationStatus}` : ""}
+              </Link>
             </Button>
           )}
         </div>
@@ -207,7 +222,7 @@ export default function RoleDetailPage() {
                 Visit website
               </a>
             )}
-            {candidate && (
+            {candidate && !role.hasApplied && (
               <Button
                 className="w-full mt-2"
                 onClick={() => setApplyOpen(true)}
@@ -215,11 +230,19 @@ export default function RoleDetailPage() {
                 Apply Now
               </Button>
             )}
+            {candidate && role.hasApplied && (
+              <Button asChild variant="outline" className="w-full mt-2">
+                <Link href="/candidate/applications">
+                  <CheckCircle2 className="h-4 w-4 mr-2" />
+                  Applied
+                </Link>
+              </Button>
+            )}
           </div>
         </aside>
       </div>
 
-      {candidate && (
+      {candidate && !role.hasApplied && (
         <ApplyDialog
           open={applyOpen}
           onOpenChange={setApplyOpen}

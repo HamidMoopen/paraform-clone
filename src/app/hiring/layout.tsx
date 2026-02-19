@@ -113,6 +113,17 @@ export default function HiringLayout({
                 </Link>
               </>
             )}
+            <Link
+              href="/hiring/messages"
+              className={cn(
+                "text-sm font-medium transition-colors hover:text-foreground",
+                pathname === "/hiring/messages"
+                  ? "text-foreground underline underline-offset-4"
+                  : "text-muted-foreground"
+              )}
+            >
+              Messages
+            </Link>
           </nav>
           <div className="flex items-center gap-3">
             <Avatar className="h-8 w-8">

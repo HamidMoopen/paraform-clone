@@ -55,6 +55,7 @@ export async function GET(request: NextRequest) {
       where: {
         role: { hiringManagerId },
         OR: [
+          { status: "interview" },
           { status: "accepted" },
           { messages: { some: {} } },
         ],

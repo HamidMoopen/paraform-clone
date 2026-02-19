@@ -7,12 +7,43 @@ export const dynamic = "force-dynamic";
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const candidateId = searchParams.get("candidateId");
+  const roleId = searchParams.get("roleId");
+
+  if (roleId) {
+    const applications = await prisma.application.findMany({
+      where: { roleId },
+      include: {
+        candidate: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            headline: true,
+            skills: true,
+            yearsExperience: true,
+            linkedinUrl: true,
+            avatarUrl: true,
+          },
+        },
+        role: {
+          select: { id: true, title: true, companyId: true },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    return NextResponse.json({
+      applications,
+      pagination: { page: 1, limit: applications.length, total: applications.length, totalPages: 1 },
+    });
+  }
+
   if (!candidateId) {
     return NextResponse.json(
-      { error: "candidateId is required" },
+      { error: "candidateId or roleId is required" },
       { status: 400 }
     );
   }
+
   const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10));
   const limit = Math.min(50, Math.max(1, parseInt(searchParams.get("limit") ?? "10", 10)));
 

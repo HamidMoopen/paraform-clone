@@ -8,6 +8,10 @@ export const createCompanySchema = z.object({
   website: z.string().url("Must be a valid URL").optional().or(z.literal("")),
 });
 
+export const createCompanyWithHmSchema = createCompanySchema.extend({
+  hiringManagerId: z.string().min(1, "Hiring manager is required"),
+});
+
 export const createRoleSchema = z
   .object({
     title: z.string().min(1, "Job title is required").max(100),
@@ -29,6 +33,7 @@ export const createRoleSchema = z
     experienceLevel: z.enum(["entry", "mid", "senior", "lead"]).optional(),
     companyId: z.string().min(1),
     hiringManagerId: z.string().min(1),
+    status: z.enum(["draft", "published"]).optional(),
   })
   .refine(
     (data) => {

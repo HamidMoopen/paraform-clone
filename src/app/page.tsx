@@ -41,7 +41,11 @@ export default function Home() {
   const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/api/personas")
+    const url =
+      typeof window !== "undefined"
+        ? `${window.location.origin}/api/personas`
+        : "/api/personas";
+    fetch(url)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to load personas");
         return res.json();
